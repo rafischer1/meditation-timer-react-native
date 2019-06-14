@@ -8,7 +8,7 @@ import {
 import TabBarIcon from "../components/TabBarIcon";
 import LoginScreen from "../screens/LoginScreen";
 import HomeScreen from "../screens/HomeScreen";
-import LinksScreen from "../screens/LinksScreen";
+import TimerScreen from "../screens/TimerScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 
 const LoginStack = createStackNavigator({
@@ -37,12 +37,12 @@ HomeStack.navigationOptions = {
   )
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen
+const TimerStack = createStackNavigator({
+  Link: TimerScreen
 });
 
-LinksStack.navigationOptions = {
-  tabBarLabel: "Links",
+TimerStack.navigationOptions = {
+  tabBarLabel: "Timer",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -67,7 +67,7 @@ ProfileStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   HomeStack,
-  LinksStack,
+  TimerStack,
   ProfileStack,
   LoginStack
 });

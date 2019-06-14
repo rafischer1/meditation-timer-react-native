@@ -9,7 +9,7 @@ export default class LoginScreen extends React.Component {
   }
 
   signIn = async () => {
-    console.log("tried to sign in");
+    console.log("hit the sign in button");
     try {
       const result = await Google.logInAsync({
         iosClientId:
@@ -18,7 +18,9 @@ export default class LoginScreen extends React.Component {
           "1073974143957-sgfhvimga2at7e0pvvko6vgnimcmj0k8.apps.googleusercontent.com",
         scopes: ["profile", "email"]
       });
+      console.log("result returned:", result);
       if (result.type === "success") {
+        console.log("result before state set:", result);
         this.setState({
           signedIn: true,
           name: result.user.name,
@@ -49,7 +51,11 @@ const LoginPage = props => {
   return (
     <View>
       <Text style={styles.header}>Sign In With Google</Text>
-      <Button title="Sign in with Google" onPress={() => props.signIn()} />
+      <Button
+        title="Sign in with Google"
+        style={styles.button}
+        onPress={() => props.signIn()}
+      />
     </View>
   );
 };
@@ -80,5 +86,6 @@ const styles = StyleSheet.create({
     borderColor: "rgba(0,0,0,0.2)",
     borderWidth: 3,
     borderRadius: 150
-  }
+  },
+  button: {}
 });
