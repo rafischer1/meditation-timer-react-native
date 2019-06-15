@@ -6,8 +6,11 @@
 react-native
 react-navigation
 expo
+Google oAuth2
+
+({Secondary Packages})
 react-native-numeric-input
-Google oAuth 2
+
 ```
 
 ---
@@ -16,10 +19,19 @@ Google oAuth 2
 
 [Trello Board](https://trello.com/b/mEUYefim/med-timer-native-app)
 
+Google Auth object:
+
+```js
+  user: {
+    email: string,
+    id: string,
+    givenName: string,
+    familyName: string,
+    photo: string, // url
+    name: string // full name
+  }
+```
+
 ---
 
 ![Basic Timer Dev Layout](./assets/images/wireframBasic.png "Basic Timer Dev Layout")
-
-```
-
-```

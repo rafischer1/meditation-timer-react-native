@@ -2,6 +2,7 @@ import React from "react";
 import { ScrollView, StyleSheet, Button, View } from "react-native";
 import CountDown from "react-native-countdown-component";
 import NumericInput from "react-native-numeric-input";
+import { MonoText } from "../components/StyledText";
 
 export default class TimerScreen extends React.Component {
   constructor(props) {
@@ -17,23 +18,28 @@ export default class TimerScreen extends React.Component {
     return this.setState({ running: false });
   }
 
+  _finishedCall(msg) {
+    console.log(`${msg}: ring the alarm!`);
+  }
+
   render() {
     return (
       <ScrollView style={styles.container}>
+        <MonoText>Select time in minutes and begin</MonoText>
         <CountDown
           size={30}
           until={this.state.timerValue * 60}
-          onFinish={() => console.log("🔔")}
+          onFinish={() => this._finishedCall("🔔")}
           digitStyle={{
             backgroundColor: "#FFF",
             borderWidth: 2,
-            borderColor: "#1CC625"
+            borderColor: "white",
+            borderRadius: 5
           }}
-          digitTxtStyle={{ color: "#1CC625" }}
-          timeLabelStyle={{ color: "teal", fontWeight: "bold" }}
-          separatorStyle={{ color: "teal" }}
-          timeToShow={["M", "S"]}
-          timeLabels={{ m: "min", s: "sec" }}
+          digitTxtStyle={{ color: "#2546A4" }}
+          timeLabelStyle={{ color: "white", fontWeight: "bold" }}
+          timeToShow={["H", "M", "S"]}
+          timeLabels={{ h: "hr", m: "min", s: "sec" }}
           showSeparator
           running={this.state.running}
         />
@@ -42,16 +48,16 @@ export default class TimerScreen extends React.Component {
             value={this.state.value}
             onChange={value => this.setState({ value })}
             onLimitReached={(isMax, msg) => console.log(isMax, msg)}
-            totalWidth={220}
-            totalHeight={50}
-            iconSize={25}
+            totalWidth={250}
+            totalHeight={60}
+            iconSize={30}
             step={5}
             valueType="integer"
             rounded
-            textColor="teal"
+            textColor="white"
             iconStyle={{ color: "white" }}
-            rightButtonBackgroundColor="#EA3788"
-            leftButtonBackgroundColor="#E56B70"
+            rightButtonBackgroundColor="#229E84"
+            leftButtonBackgroundColor="#27229E"
           />
         </View>
         <View style={styles.button}>
@@ -59,7 +65,7 @@ export default class TimerScreen extends React.Component {
             style={styles.button}
             onPress={() => this._startButton(this.state.value)}
             title="Start"
-            color="black"
+            color="#27229E"
             accessibilityLabel="Start the meditation timer"
           />
         </View>
@@ -67,7 +73,7 @@ export default class TimerScreen extends React.Component {
           <Button
             onPress={() => this._stopButton()}
             title="Stop"
-            color="black"
+            color="#27229E"
             accessibilityLabel="Stop the meditation timer"
           />
         </View>
@@ -83,23 +89,22 @@ TimerScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 35,
-    backgroundColor: "#000"
+    backgroundColor: "black",
+    alignItems: "center",
+    justifyContent: "center"
   },
   input: {
-    paddingLeft: 55,
     margin: 20
   },
   button: {
-    width: "75%",
     paddingTop: 10,
     paddingBottom: 10,
     marginBottom: 10,
-    marginLeft: "12.5%",
     textAlign: "center",
     backgroundColor: "white",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#fff"
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#84229E",
+    backgroundOpacity: 2
   }
 });

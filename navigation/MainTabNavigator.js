@@ -16,7 +16,14 @@ const LoginStack = createStackNavigator({
 });
 
 LoginStack.navigationOptions = {
-  tabBarLabel: "Login"
+  tabBarLabel: "Login",
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      color="#84229E"
+      focused={focused}
+      name={Platform.OS === "ios" ? "ios-bulb" : "md-bulb"}
+    />
+  )
 };
 
 const HomeStack = createStackNavigator({
@@ -27,12 +34,9 @@ HomeStack.navigationOptions = {
   tabBarLabel: "Home",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
+      color="#84229E"
       focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? `ios-information-circle${focused ? "" : "-outline"}`
-          : "md-information-circle"
-      }
+      name={Platform.OS === "ios" ? "ios-rose" : "md-rose"}
     />
   )
 };
@@ -45,8 +49,9 @@ TimerStack.navigationOptions = {
   tabBarLabel: "Timer",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
+      color="#229E84"
       focused={focused}
-      name={Platform.OS === "ios" ? "ios-link" : "md-link"}
+      name={Platform.OS === "ios" ? "ios-alarm" : "md-alarm"}
     />
   )
 };
@@ -59,8 +64,9 @@ ProfileStack.navigationOptions = {
   tabBarLabel: "Profile",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
+      color="#27229E"
       focused={focused}
-      name={Platform.OS === "ios" ? "ios-options" : "md-options"}
+      name={Platform.OS === "ios" ? "ios-planet" : "md-planet"}
     />
   )
 };

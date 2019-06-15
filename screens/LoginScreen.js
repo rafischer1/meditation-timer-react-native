@@ -1,11 +1,28 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, Button } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Button,
+  ScrollView
+} from "react-native";
+import store from "../store/store";
 import { Google } from "expo";
+import { MonoText } from "../components/StyledText";
 
 export default class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { signedIn: false, name: "", photoUrl: "" };
+    this.state = {
+      signedIn: false,
+      name: "",
+      photoUrl: "",
+      userId: "",
+      userName: "",
+      photoUrl: "",
+      givenName: ""
+    };
   }
 
   signIn = async () => {
@@ -21,10 +38,13 @@ export default class LoginScreen extends React.Component {
       console.log("result returned:", result);
       if (result.type === "success") {
         console.log("result before state set:", result);
-        this.setState({
+        loginCallback(result.user.givenName, result.user.id);
+        return this.setState({
           signedIn: true,
+          userId: result.user.id,
           name: result.user.name,
-          photoUrl: result.user.photoUrl
+          photoUrl: result.user.photoUrl,
+          givenName: result.user.givenName
         });
       } else {
         console.log("cancelled");
@@ -50,9 +70,9 @@ export default class LoginScreen extends React.Component {
 const LoginPage = props => {
   return (
     <View>
-      <Text style={styles.header}>Sign In With Google</Text>
+      <MonoText style={styles.header}>Sign In With Google</MonoText>
       <Button
-        title="Sign in with Google"
+        title="Sign In"
         style={styles.button}
         onPress={() => props.signIn()}
       />
@@ -63,8 +83,13 @@ const LoginPage = props => {
 const LoggedInPage = props => {
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Welcome:{props.name}</Text>
+      <MonoText style={styles.header}>Welcome: {props.name}</MonoText>
       <Image style={styles.image} source={{ uri: props.photoUrl }} />
+      <View style={styles.info}>
+        <MonoText>Profile: see your stats!</MonoText>
+        <MonoText>Timer: start a session!</MonoText>
+        <MonoText>Home: learn about Meditation Timer!</MonoText>
+      </View>
     </View>
   );
 };
@@ -77,7 +102,8 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   header: {
-    fontSize: 25
+    fontSize: 25,
+    padding: 10
   },
   image: {
     marginTop: 15,
@@ -87,5 +113,42 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderRadius: 150
   },
-  button: {}
+  info: {
+    textAlign: "center",
+    fontSize: 20,
+    borderWidth: 3,
+    width: 200,
+    height: 200,
+    padding: 10,
+    borderColor: "#84229E",
+    borderRadius: 10
+  }
 });
+
+const loginCallback = async (name, id) => {
+  console.log("logincallback called");
+  let postBody = {
+    username: name,
+    id
+  };
+  let response = await fetch("http://localhost:3000/users", {
+    method: "POST",
+    body: JSON.stringify(postBody),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+  if (response.status === 201) {
+    let user = await response.json();
+    store.setAuthId(+user.authId);
+    store.setName(user.userName);
+    return;
+  } else {
+    let newUser = await response.json();
+    store.setAuthId(+newUser.authId);
+    store.setName(newUser.userName);
+    return;
+  }
+
+  return null;
+};

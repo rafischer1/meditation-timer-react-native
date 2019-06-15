@@ -9,5 +9,6 @@ npm-debug.*
 web-build/
 web-report/
 .env
+.env.development
 .vscode
 
