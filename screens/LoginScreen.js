@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,39 +6,37 @@ import {
   Image,
   Button,
   ScrollView
-} from "react-native";
-import store from "../store/store";
-import { Google } from "expo";
-import { MonoText } from "../components/StyledText";
+} from 'react-native';
+import { Google } from 'expo';
+import { connect } from 'react-redux';
+import { MonoText } from '../components/StyledText';
 
 export default class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       signedIn: false,
-      name: "",
-      photoUrl: "",
-      userId: "",
-      userName: "",
-      photoUrl: "",
-      givenName: ""
+      name: '',
+      photoUrl: '',
+      userId: '',
+      userName: '',
+      photoUrl: '',
+      givenName: ''
     };
   }
 
   signIn = async () => {
-    console.log("hit the sign in button");
+    console.log('hit the sign in button');
     try {
       const result = await Google.logInAsync({
         iosClientId:
-          "1073974143957-sgfhvimga2at7e0pvvko6vgnimcmj0k8.apps.googleusercontent.com",
+          '1073974143957-sgfhvimga2at7e0pvvko6vgnimcmj0k8.apps.googleusercontent.com',
         iosStandaloneAppClientId:
-          "1073974143957-sgfhvimga2at7e0pvvko6vgnimcmj0k8.apps.googleusercontent.com",
-        scopes: ["profile", "email"]
+          '1073974143957-sgfhvimga2at7e0pvvko6vgnimcmj0k8.apps.googleusercontent.com',
+        scopes: ['profile', 'email']
       });
-      console.log("result returned:", result);
-      if (result.type === "success") {
-        console.log("result before state set:", result);
-        loginCallback(result.user.givenName, result.user.id);
+      if (result.type === 'success') {
+        this.loginCallback(result.user.givenName, result.user.id);
         return this.setState({
           signedIn: true,
           userId: result.user.id,
@@ -47,11 +45,34 @@ export default class LoginScreen extends React.Component {
           givenName: result.user.givenName
         });
       } else {
-        console.log("cancelled");
+        console.log('cancelled');
       }
     } catch (err) {
-      console.log("sign in error", err);
+      console.log('sign in error', err);
     }
+  };
+
+  loginCallback = async (name, id) => {
+    console.log('logincallback called');
+    let postBody = {
+      username: name,
+      id
+    };
+    let response = await fetch('http://localhost:3000/users', {
+      method: 'POST',
+      body: JSON.stringify(postBody),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.status === 201) {
+      let user = await response.json();
+      console.log('user:', user);
+    } else {
+      let newUser = await response.json();
+      console.log('new user:', newUser);
+    }
+    return 'hi';
   };
 
   render() {
@@ -72,7 +93,7 @@ const LoginPage = props => {
     <View>
       <MonoText style={styles.header}>Sign In With Google</MonoText>
       <Button
-        title="Sign In"
+        title='Sign In'
         style={styles.button}
         onPress={() => props.signIn()}
       />
@@ -97,9 +118,9 @@ const LoggedInPage = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   header: {
     fontSize: 25,
@@ -109,46 +130,18 @@ const styles = StyleSheet.create({
     marginTop: 15,
     width: 150,
     height: 150,
-    borderColor: "rgba(0,0,0,0.2)",
+    borderColor: 'rgba(0,0,0,0.2)',
     borderWidth: 3,
     borderRadius: 150
   },
   info: {
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 20,
     borderWidth: 3,
     width: 200,
     height: 200,
     padding: 10,
-    borderColor: "#84229E",
+    borderColor: '#84229E',
     borderRadius: 10
   }
 });
-
-const loginCallback = async (name, id) => {
-  console.log("logincallback called");
-  let postBody = {
-    username: name,
-    id
-  };
-  let response = await fetch("http://localhost:3000/users", {
-    method: "POST",
-    body: JSON.stringify(postBody),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
-  if (response.status === 201) {
-    let user = await response.json();
-    store.setAuthId(+user.authId);
-    store.setName(user.userName);
-    return;
-  } else {
-    let newUser = await response.json();
-    store.setAuthId(+newUser.authId);
-    store.setName(newUser.userName);
-    return;
-  }
-
-  return null;
-};

@@ -12,7 +12,8 @@ import TimerScreen from "../screens/TimerScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 
 const LoginStack = createStackNavigator({
-  Login: LoginScreen
+  Login: LoginScreen,
+  props: ProfileScreen
 });
 
 LoginStack.navigationOptions = {
@@ -57,7 +58,8 @@ TimerStack.navigationOptions = {
 };
 
 const ProfileStack = createStackNavigator({
-  Settings: ProfileScreen
+  Settings: ProfileScreen,
+  props: LoginScreen
 });
 
 ProfileStack.navigationOptions = {

@@ -19,6 +19,8 @@ react-native-numeric-input
 
 [Trello Board](https://trello.com/b/mEUYefim/med-timer-native-app)
 
+[Redux](https://redux.js.org/basics/usage-with-react)
+
 Google Auth object:
 
 ```js
