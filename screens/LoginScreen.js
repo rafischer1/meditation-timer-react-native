@@ -7,8 +7,8 @@ import {
   Button,
   ScrollView
 } from 'react-native';
+
 import { Google } from 'expo';
-import { connect } from 'react-redux';
 import { MonoText } from '../components/StyledText';
 
 export default class LoginScreen extends React.Component {
@@ -17,10 +17,9 @@ export default class LoginScreen extends React.Component {
     this.state = {
       signedIn: false,
       name: '',
-      photoUrl: '',
+      photo: '',
       userId: '',
       userName: '',
-      photoUrl: '',
       givenName: ''
     };
   }
@@ -36,12 +35,17 @@ export default class LoginScreen extends React.Component {
         scopes: ['profile', 'email']
       });
       if (result.type === 'success') {
-        this.loginCallback(result.user.givenName, result.user.id);
+        this.loginCallback(
+          result.user.givenName,
+          result.user.id,
+          result.user.photoUrl
+        );
+        this.updateProfile(result.user);
         return this.setState({
           signedIn: true,
           userId: result.user.id,
           name: result.user.name,
-          photoUrl: result.user.photoUrl,
+          photo: result.user.photoUrl,
           givenName: result.user.givenName
         });
       } else {
@@ -52,11 +56,11 @@ export default class LoginScreen extends React.Component {
     }
   };
 
-  loginCallback = async (name, id) => {
-    console.log('logincallback called');
+  loginCallback = async (name, id, photo) => {
     let postBody = {
       username: name,
-      id
+      authid: id,
+      photo
     };
     let response = await fetch('http://localhost:3000/users', {
       method: 'POST',
@@ -75,11 +79,18 @@ export default class LoginScreen extends React.Component {
     return 'hi';
   };
 
+  updateProfile(user) {
+    console.log('updateProfile Called');
+    this.props.navigation.navigate('Profile', {
+      user: user
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
         {this.state.signedIn ? (
-          <LoggedInPage name={this.state.name} photoUrl={this.state.photoUrl} />
+          <LoggedInPage name={this.state.name} photoUrl={this.state.photo} />
         ) : (
           <LoginPage signIn={this.signIn} />
         )}
@@ -113,6 +124,13 @@ const LoggedInPage = props => {
       </View>
     </View>
   );
+};
+
+const profile = {
+  id: 1,
+  name: 'testname',
+  photo: '12312312',
+  loggedin: true
 };
 
 const styles = StyleSheet.create({

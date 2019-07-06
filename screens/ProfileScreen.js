@@ -1,18 +1,19 @@
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, Image, Button } from 'react-native';
 import { MonoText } from '../components/StyledText';
 import { LinearGradient } from 'expo';
 
-export default class ProfileScreen extends React.Component {
+class ProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      signedIn: true,
-      name: 'Artie',
-      photoUrl: '',
-      userId: '1',
-      userName: '',
+      profile: {},
+      signedIn: false,
+      name: '',
+      photo: '',
+      id: '',
+      username: '',
       photoUrl: '',
       givenName: '',
       sessions: [],
@@ -20,14 +21,8 @@ export default class ProfileScreen extends React.Component {
     };
   }
 
-  loadProfile = () => {
-    console.log('load profile:', this.props.navigation);
-  };
-
-  loadSessions = () => {
-    return this.state.signedIn === false
-      ? null
-      : this.fetchSession(this.state.userId);
+  loadSessions = id => {
+    return this.state.signedIn === false ? null : this.fetchSession(id);
   };
 
   fetchSession = async id => {
@@ -47,25 +42,55 @@ export default class ProfileScreen extends React.Component {
   };
 
   componentDidMount() {
-    // this.loadProfile();
-    this.loadSessions();
+    if (this.props.navigation.state.params === undefined) {
+      console.log('profile:', this.props.navigation.state.params);
+      this.setState({
+        signedIn: false
+      });
+    } else if (this.props.navigation.state.params !== undefined) {
+      console.log('profile 2:', this.props.navigation.state.params);
+      this.setState({
+        signedIn: true,
+        id: this.props.navigation.state.params.user.id,
+        name: this.props.navigation.state.params.user.givenName,
+        photoUrl: this.props.navigation.state.params.user.photoUrl
+      });
+      this.loadSessions(this.props.navigation.state.params.user.id);
+    }
   }
 
   render() {
     return this.state.signedIn === false ? (
       <ScrollView>
         <MonoText style={styles.altText}>SIGN IN TO SEE YOUR PROFILE</MonoText>
+        <Button
+          title='Go to Sign In'
+          onPress={() => {
+            this.props.navigation.navigate('Login', {
+              id: 0
+            });
+          }}
+        />
       </ScrollView>
     ) : (
       <ScrollView style={styles.container}>
         <LinearGradient
           colors={['#229E84', 'white', 'white']}
-          style={{ padding: 0, alignItems: 'center', borderRadius: 4 }}
+          style={{
+            padding: 0,
+            alignItems: 'center',
+            borderRadius: 4
+          }}
         >
           <MonoText style={styles.altText}>
             {this.state.name}'s Profile 🌺
           </MonoText>
+
           <View>
+            <Image
+              style={{ width: 50, height: 50 }}
+              source={{ uri: this.state.photoUrl }}
+            />
             {this.state.sessions.map(session => {
               return (
                 <View>
@@ -92,6 +117,8 @@ ProfileScreen.navigationOptions = {
   title: 'Profile'
 };
 
+export default ProfileScreen;
+
 // FormatDate returns a US style date `day/month/year` from a timestamp
 const FormatDate = createdAt => {
   //2019-06-15T19:20:40.421Z
@@ -102,7 +129,6 @@ const FormatDate = createdAt => {
       .split('-')[2]
       .split('T')[0]
   }/${createdAt.split(':')[0].split('-')[0]}`;
-  console.log(date);
   return date;
 };
 
