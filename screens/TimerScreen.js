@@ -7,11 +7,24 @@ import { MonoText } from '../components/StyledText';
 export default class TimerScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { value: 0, timerValue: 10, running: false };
+    this.state = {
+      value: 0,
+      timerValue: 0,
+      running: false,
+      id: 1,
+      duration: 13,
+      finished: false
+    };
   }
 
   _startButton(value) {
-    return this.setState({ timerValue: value, value: 0, running: true });
+    console.log('value:', value);
+    return this.setState({
+      timerValue: value,
+      value: 0,
+      running: true,
+      finished: false
+    });
   }
 
   _stopButton() {
@@ -20,7 +33,28 @@ export default class TimerScreen extends React.Component {
 
   _finishedCall(msg) {
     console.log(`${msg}: ring the alarm!`);
+    return this.setState({ finished: true });
   }
+
+  _postSession = async (id, duration) => {
+    let postBody = {
+      duration: duration
+    };
+    let response = await fetch(`http://localhost:3000/sessions/${id}`, {
+      method: 'POST',
+      body: JSON.stringify(postBody),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.status === 200) {
+      alert('Session logged!');
+      return this.setState({ finished: false });
+    } else {
+      alert("Session didn't log for some reason:", response.status);
+      return this.setState({ finished: false });
+    }
+  };
 
   render() {
     return (
@@ -51,7 +85,7 @@ export default class TimerScreen extends React.Component {
             totalWidth={250}
             totalHeight={60}
             iconSize={30}
-            step={5}
+            step={1}
             valueType='integer'
             rounded
             textColor='white'
@@ -60,23 +94,38 @@ export default class TimerScreen extends React.Component {
             leftButtonBackgroundColor='#27229E'
           />
         </View>
-        <View style={styles.button}>
-          <Button
-            style={styles.button}
-            onPress={() => this._startButton(this.state.value)}
-            title='Start'
-            color='#27229E'
-            accessibilityLabel='Start the meditation timer'
-          />
-        </View>
-        <View style={styles.button}>
-          <Button
-            onPress={() => this._stopButton()}
-            title='Stop'
-            color='#27229E'
-            accessibilityLabel='Stop the meditation timer'
-          />
-        </View>
+        {!this.state.finished ? (
+          <View>
+            <View style={styles.button}>
+              <Button
+                style={styles.button}
+                onPress={() => this._startButton(this.state.value)}
+                title='Start'
+                color='#27229E'
+                accessibilityLabel='Start the meditation timer'
+              />
+            </View>
+            <View style={styles.button}>
+              <Button
+                onPress={() => this._stopButton()}
+                title='Stop'
+                color='#27229E'
+                accessibilityLabel='Stop the meditation timer'
+              />
+            </View>
+          </View>
+        ) : (
+          <View style={styles.button}>
+            <Button
+              onPress={() =>
+                this._postSession(this.state.id, this.state.timerValue)
+              }
+              title='🔔 Log Session? 🔔'
+              color='#27229E'
+              accessibilityLabel='Log the session to your profile'
+            />
+          </View>
+        )}
       </ScrollView>
     );
   }

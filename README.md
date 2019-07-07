@@ -36,4 +36,10 @@ Google Auth object:
 
 ---
 
-![Basic Timer Dev Layout](./assets/images/wireframBasic.png "Basic Timer Dev Layout")
+TODO
+
+[] Login route always passing props to the profile route - signedIn toggling faulty
+
+[] Timer saving total time elapsed in state and sending to the database - automatically updates profile
+
+![Basic Timer Dev Layout](./assets/images/wireframBasic.png 'Basic Timer Dev Layout')

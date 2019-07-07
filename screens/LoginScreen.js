@@ -10,6 +10,7 @@ import {
 
 import { Google } from 'expo';
 import { MonoText } from '../components/StyledText';
+import { setUser } from '../store/store';
 
 export default class LoginScreen extends React.Component {
   constructor(props) {
@@ -40,6 +41,12 @@ export default class LoginScreen extends React.Component {
           result.user.id,
           result.user.photoUrl
         );
+        const updatedUser = {
+          id: result.user.id,
+          name: result.user.givenName,
+          photoUrl: result.user.photoUrl
+        };
+        setUser(updatedUser);
         this.updateProfile(result.user);
         return this.setState({
           signedIn: true,
@@ -76,7 +83,7 @@ export default class LoginScreen extends React.Component {
       let newUser = await response.json();
       console.log('new user:', newUser);
     }
-    return 'hi';
+    return null;
   };
 
   updateProfile(user) {
