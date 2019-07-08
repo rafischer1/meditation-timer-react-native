@@ -3,14 +3,17 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Text, View, StyleSheet, Image, Button } from 'react-native';
 import { MonoText } from '../components/StyledText';
 import { LinearGradient } from 'expo';
-import { getUser } from '../store/store';
+import { connect } from 'react-redux';
+import store from '../redux/store';
+import { getSessions } from '../redux/actions/actions';
+import { selectAssetSource } from 'expo-asset/build/AssetSources';
 const faker = require('faker');
 
 class ProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      profile: {},
+      user: {},
       signedIn: false,
       name: faker.name.firstName(),
       photo: '',
@@ -23,14 +26,19 @@ class ProfileScreen extends React.Component {
     };
   }
 
-  loadSessions = id => {
-    return this.state.signedIn === false ? null : this.fetchSession(id);
-  };
+  // loadSessions = () => {
+  //   return this.state.signedIn === true ? null : this.fetchSession();
+  // };
 
-  fetchSession = async id => {
-    let response = await fetch(`http://localhost:3000/sessions/${id}`);
+  fetchSession = async () => {
+    let response = await fetch(
+      `http://localhost:3000/sessions/${this.props.user.authid}`
+    );
     let sessions = await response.json();
-    console.log('profile mount:', sessions);
+    if (sessions.length === 0) {
+      alert('Log a session first!');
+    }
+    console.log('profile sessions:', sessions);
     let total = 0;
     sessions.map(session => {
       console.log('session:', session.duration);
@@ -51,23 +59,14 @@ class ProfileScreen extends React.Component {
    * from the login...
    */
   componentDidMount() {
-    this.updateUser();
-    this.loadSessions(1);
-    console.log('profile:', this.props.navigation.state.params);
+    this.setState({
+      user: this.props.user,
+      signedIn: true
+    });
+    // this.loadSessions(this.props.user.authid);
+    console.log('profile:', this.props.user);
+    store.dispatch(getSessions(this.props.user.authid));
   }
-
-  updateUser = () => {
-    let user = getUser();
-    console.log('user in profile:', user);
-    if (user.id !== 0) {
-      this.setState({
-        signedIn: true,
-        id: user.id,
-        name: user.name,
-        photoUrl: user.photoUrl
-      });
-    }
-  };
 
   render() {
     return (
@@ -81,7 +80,7 @@ class ProfileScreen extends React.Component {
           }}
         >
           <MonoText style={styles.altText}>
-            {this.state.name}'s Profile 🌺
+            {this.props.user.username}'s Profile 🌺
           </MonoText>
 
           <View style={styles.shadow}>
@@ -91,11 +90,11 @@ class ProfileScreen extends React.Component {
                 height: 80,
                 borderRadius: 5
               }}
-              source={{ uri: this.state.photoUrl }}
+              source={{ uri: this.props.user.photo }}
             />
           </View>
           <Button
-            onPress={() => this.fetchSession(1)}
+            onPress={() => this.fetchSession(this.props.user.authid)}
             title='Get Sessions for user'
             color='#27229E'
             accessibilityLabel='Log the session to your profile'
@@ -125,7 +124,12 @@ ProfileScreen.navigationOptions = {
   title: 'Profile'
 };
 
-export default ProfileScreen;
+function mapStateToProps(state) {
+  const user = state;
+  return { user: user.userReducer[0] };
+}
+
+export default connect(mapStateToProps)(ProfileScreen);
 
 // FormatDate returns a US style date `day/month/year` from a timestamp
 const FormatDate = createdAt => {
@@ -173,22 +177,3 @@ const styles = StyleSheet.create({
     shadowOpacity: 1.0
   }
 });
-
-// componentDidMount() {
-//   console.log('GET USER IN PROFILE:', getUser());
-//   if (this.props.navigation.state.params === undefined) {
-//     console.log('profile:', this.props.navigation.state.params);
-//     this.setState({
-//       signedIn: false
-//     });
-//   } else if (this.props.navigation.state.params !== undefined) {
-//     console.log('profile 2:', this.props.navigation.state.params);
-//     this.setState({
-//       signedIn: true,
-//       id: this.props.navigation.state.params.user.id,
-//       name: this.props.navigation.state.params.user.givenName,
-//       photoUrl: this.props.navigation.state.params.user.photoUrl
-//     });
-//     this.loadSessions(this.props.navigation.state.params.user.id);
-//   }
-// }

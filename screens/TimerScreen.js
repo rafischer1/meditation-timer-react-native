@@ -3,11 +3,13 @@ import { ScrollView, StyleSheet, Button, View } from 'react-native';
 import CountDown from 'react-native-countdown-component';
 import NumericInput from 'react-native-numeric-input';
 import { MonoText } from '../components/StyledText';
+import { connect } from 'react-redux';
 
-export default class TimerScreen extends React.Component {
+class TimerScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      user: {},
       value: 0,
       timerValue: 0,
       running: false,
@@ -21,9 +23,11 @@ export default class TimerScreen extends React.Component {
     console.log('value:', value);
     return this.setState({
       timerValue: value,
+      signedIn: false,
       value: 0,
       running: true,
-      finished: false
+      finished: false,
+      user: {}
     });
   }
 
@@ -40,13 +44,16 @@ export default class TimerScreen extends React.Component {
     let postBody = {
       duration: duration
     };
-    let response = await fetch(`http://localhost:3000/sessions/${id}`, {
-      method: 'POST',
-      body: JSON.stringify(postBody),
-      headers: {
-        'Content-Type': 'application/json'
+    let response = await fetch(
+      `http://localhost:3000/sessions/${this.props.user.authid}`,
+      {
+        method: 'POST',
+        body: JSON.stringify(postBody),
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
     if (response.status === 200) {
       alert('Session logged!');
       return this.setState({ finished: false });
@@ -55,6 +62,14 @@ export default class TimerScreen extends React.Component {
       return this.setState({ finished: false });
     }
   };
+
+  componentDidMount() {
+    this.setState({
+      user: this.props.user,
+      signedIn: true
+    });
+    console.log('timer profile:', this.props.user);
+  }
 
   render() {
     return (
@@ -71,9 +86,16 @@ export default class TimerScreen extends React.Component {
             borderRadius: 5
           }}
           digitTxtStyle={{ color: '#2546A4' }}
-          timeLabelStyle={{ color: 'white', fontWeight: 'bold' }}
+          timeLabelStyle={{
+            color: 'white',
+            fontWeight: 'bold'
+          }}
           timeToShow={['H', 'M', 'S']}
-          timeLabels={{ h: 'hr', m: 'min', s: 'sec' }}
+          timeLabels={{
+            h: 'hr',
+            m: 'min',
+            s: 'sec'
+          }}
           showSeparator
           running={this.state.running}
         />
@@ -118,7 +140,7 @@ export default class TimerScreen extends React.Component {
           <View style={styles.button}>
             <Button
               onPress={() =>
-                this._postSession(this.state.id, this.state.timerValue)
+                this._postSession(this.props.user.authid, this.state.timerValue)
               }
               title='🔔 Log Session? 🔔'
               color='#27229E'
@@ -134,6 +156,13 @@ export default class TimerScreen extends React.Component {
 TimerScreen.navigationOptions = {
   title: '⏳ Meditation Timer ⏲'
 };
+
+function mapStateToProps(state) {
+  const user = state;
+  return { user: user.userReducer[0] };
+}
+
+export default connect(mapStateToProps)(TimerScreen);
 
 const styles = StyleSheet.create({
   container: {

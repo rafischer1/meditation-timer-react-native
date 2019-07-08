@@ -7,15 +7,17 @@ import {
   Button,
   ScrollView
 } from 'react-native';
-
 import { Google } from 'expo';
 import { MonoText } from '../components/StyledText';
-import { setUser } from '../store/store';
+import store from '../redux/store';
+import { getUser, USER_SUCCESS } from '../redux/actions/actions';
+import { connect } from 'react-redux';
 
-export default class LoginScreen extends React.Component {
+class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      user: {},
       signedIn: false,
       name: '',
       photo: '',
@@ -36,19 +38,10 @@ export default class LoginScreen extends React.Component {
         scopes: ['profile', 'email']
       });
       if (result.type === 'success') {
-        this.loginCallback(
-          result.user.givenName,
-          result.user.id,
-          result.user.photoUrl
-        );
-        const updatedUser = {
-          id: result.user.id,
-          name: result.user.givenName,
-          photoUrl: result.user.photoUrl
-        };
-        setUser(updatedUser);
+        this.loginCallback();
         this.updateProfile(result.user);
         return this.setState({
+          user: result.user,
           signedIn: true,
           userId: result.user.id,
           name: result.user.name,
@@ -59,15 +52,15 @@ export default class LoginScreen extends React.Component {
         console.log('cancelled');
       }
     } catch (err) {
-      console.log('sign in error', err);
+      alert(`Error on sign in: ${err}`);
     }
   };
 
-  loginCallback = async (name, id, photo) => {
+  loginCallback = async () => {
     let postBody = {
-      username: name,
-      authid: id,
-      photo
+      username: this.props.user.username,
+      authid: this.props.user.authid,
+      photo: this.props.user.photo
     };
     let response = await fetch('http://localhost:3000/users', {
       method: 'POST',
@@ -86,12 +79,14 @@ export default class LoginScreen extends React.Component {
     return null;
   };
 
-  updateProfile(user) {
+  updateProfile = user => {
     console.log('updateProfile Called');
-    this.props.navigation.navigate('Profile', {
-      user: user
-    });
-  }
+    store.dispatch(getUser(user.id));
+    // what is the deal here?!?!?!
+    // this.props.navigation.navigate('Profile', {
+    //   user: user
+    // });
+  };
 
   render() {
     return (
@@ -133,12 +128,22 @@ const LoggedInPage = props => {
   );
 };
 
-const profile = {
-  id: 1,
-  name: 'testname',
-  photo: '12312312',
-  loggedin: true
+const mapDispatchToProps = dispatch => {
+  return {
+    // dispatching plain actions
+    setUser: () => dispatch({ type: USER_SUCCESS })
+  };
 };
+
+function mapStateToProps(state) {
+  const user = state;
+  return { user: user.userReducer[0] };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LoginScreen);
 
 const styles = StyleSheet.create({
   container: {
