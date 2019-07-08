@@ -2,11 +2,7 @@ import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Text, View, StyleSheet, Image, Button } from 'react-native';
 import { MonoText } from '../components/StyledText';
-import { LinearGradient } from 'expo';
 import { connect } from 'react-redux';
-import store from '../redux/store';
-import { getSessions } from '../redux/actions/actions';
-import { selectAssetSource } from 'expo-asset/build/AssetSources';
 const faker = require('faker');
 
 class ProfileScreen extends React.Component {
@@ -26,10 +22,6 @@ class ProfileScreen extends React.Component {
     };
   }
 
-  // loadSessions = () => {
-  //   return this.state.signedIn === true ? null : this.fetchSession();
-  // };
-
   fetchSession = async () => {
     let response = await fetch(
       `http://localhost:3000/sessions/${this.props.user.authid}`
@@ -38,12 +30,9 @@ class ProfileScreen extends React.Component {
     if (sessions.length === 0) {
       alert('Log a session first!');
     }
-    console.log('profile sessions:', sessions);
     let total = 0;
     sessions.map(session => {
-      console.log('session:', session.duration);
       total += session.duration;
-      console.log('session total:', total);
       return total;
     });
     return this.setState({
@@ -53,56 +42,51 @@ class ProfileScreen extends React.Component {
     });
   };
 
-  /**
-   * This is faulty: it seems like if the user is already logged in or if you navigate
-   * from the profile page itself the signIn: false remains and nothing is passed as params
-   * from the login...
-   */
   componentDidMount() {
-    this.setState({
-      user: this.props.user,
-      signedIn: true
-    });
-    // this.loadSessions(this.props.user.authid);
-    console.log('profile:', this.props.user);
-    store.dispatch(getSessions(this.props.user.authid));
+    if (!this.props.user) {
+      return null;
+    } else {
+      console.log('component mount props:', this.props.user);
+      this.setState({
+        user: this.props.user,
+        signedIn: true
+      });
+    }
   }
 
   render() {
     return (
       <ScrollView style={styles.container}>
-        <LinearGradient
-          colors={['#F7FFFB', 'white']}
-          style={{
-            padding: 0,
-            alignItems: 'center',
-            borderRadius: 4
-          }}
-        >
-          <MonoText style={styles.altText}>
-            {this.props.user.username}'s Profile 🌺
-          </MonoText>
-
-          <View style={styles.shadow}>
-            <Image
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 5
-              }}
-              source={{ uri: this.props.user.photo }}
+        {!this.props.user ? (
+          <MonoText style={styles.altText}>Login in to see profile</MonoText>
+        ) : (
+          <ScrollView style={styles.container}>
+            <MonoText style={styles.altText}>
+              {this.props.user.username}'s Profile 🌺
+            </MonoText>
+            <View style={styles.shadow}>
+              <Image
+                style={{
+                  width: 80,
+                  alignItems: 'center',
+                  height: 80,
+                  borderRadius: 5
+                }}
+                source={{ uri: this.props.user.photo }}
+              />
+            </View>
+            <Button
+              onPress={() => this.fetchSession(this.props.user.authid)}
+              title='Get Sessions for user'
+              color='#27229E'
+              accessibilityLabel='Log the session to your profile'
             />
-          </View>
-          <Button
-            onPress={() => this.fetchSession(this.props.user.authid)}
-            title='Get Sessions for user'
-            color='#27229E'
-            accessibilityLabel='Log the session to your profile'
-          />
-          <Text style={styles.altText}>
-            Total time in meditation: {this.state.total} min
-          </Text>
-        </LinearGradient>
+            <Text style={styles.altText}>
+              Total time in meditation: {this.state.total} min
+            </Text>
+          </ScrollView>
+        )}
+
         {this.state.sessions.map(session => {
           return (
             <View style={styles.sessionDiv}>
@@ -148,8 +132,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     color: 'white',
-    backgroundColor: 'white',
     alignItems: 'center',
+    backgroundColor: 'white',
     justifyContent: 'flex-start',
     paddingTop: 30
   },
@@ -161,6 +145,7 @@ const styles = StyleSheet.create({
     borderColor: '#27229E'
   },
   sessions: {
+    alignItems: 'center',
     fontSize: 14,
     color: '#229E84',
     margin: 4

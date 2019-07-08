@@ -10,6 +10,7 @@ import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
 import TimerScreen from '../screens/TimerScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import ChatScreen from '../screens/ChatScreen';
 
 const LoginStack = createStackNavigator({
   Login: LoginScreen
@@ -21,7 +22,7 @@ LoginStack.navigationOptions = {
     <TabBarIcon
       color='#84229E'
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-bulb' : 'md-bulb'}
+      name={Platform.OS === 'ios' ? 'ios-flower' : 'md-flower'}
     />
   )
 };
@@ -56,6 +57,21 @@ TimerStack.navigationOptions = {
   )
 };
 
+const ChatStack = createStackNavigator({
+  Chat: ChatScreen
+});
+
+ChatStack.navigationOptions = {
+  tabBarLabel: 'Chat',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      color='#27229E'
+      focused={focused}
+      name={Platform.OS === 'ios' ? 'ios-bonfire' : 'md-bonfire'}
+    />
+  )
+};
+
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen
 });
@@ -74,6 +90,7 @@ ProfileStack.navigationOptions = {
 export default createBottomTabNavigator({
   HomeStack,
   TimerStack,
+  ChatStack,
   ProfileStack,
   LoginStack
 });

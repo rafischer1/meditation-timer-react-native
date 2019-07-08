@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  Button,
-  ScrollView
-} from 'react-native';
+import { StyleSheet, View, Image, Button } from 'react-native';
 import { Google } from 'expo';
 import { MonoText } from '../components/StyledText';
 import store from '../redux/store';
@@ -79,14 +72,7 @@ class LoginScreen extends React.Component {
     return null;
   };
 
-  updateProfile = user => {
-    console.log('updateProfile Called');
-    store.dispatch(getUser(user.id));
-    // what is the deal here?!?!?!
-    // this.props.navigation.navigate('Profile', {
-    //   user: user
-    // });
-  };
+  updateProfile = user => store.dispatch(getUser(user.id));
 
   render() {
     return (
@@ -130,7 +116,6 @@ const LoggedInPage = props => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    // dispatching plain actions
     setUser: () => dispatch({ type: USER_SUCCESS })
   };
 };
