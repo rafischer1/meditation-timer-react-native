@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Image, Button } from 'react-native';
+import { StyleSheet, View, Image, Button, ImageBackground } from 'react-native';
 import { Google } from 'expo';
-import { MonoText } from '../components/StyledText';
+import { MontserratText } from '../components/StyledText';
 import store from '../redux/store';
 import { getUser, USER_SUCCESS } from '../redux/actions/actions';
 import { connect } from 'react-redux';
@@ -31,8 +31,7 @@ class LoginScreen extends React.Component {
         scopes: ['profile', 'email']
       });
       if (result.type === 'success') {
-        this.loginCallback();
-        this.updateProfile(result.user);
+        this.loginCallback(result);
         return this.setState({
           user: result.user,
           signedIn: true,
@@ -49,12 +48,14 @@ class LoginScreen extends React.Component {
     }
   };
 
-  loginCallback = async () => {
+  loginCallback = async result => {
     let postBody = {
-      username: this.props.user.username,
-      authid: this.props.user.authid,
-      photo: this.props.user.photo
+      username: result.user.givenName,
+      authid: result.user.id,
+      photo: result.user.photoUrl,
+      email: result.user.email
     };
+    console.log('logincall result body:', postBody);
     let response = await fetch('http://localhost:3000/users', {
       method: 'POST',
       body: JSON.stringify(postBody),
@@ -62,14 +63,11 @@ class LoginScreen extends React.Component {
         'Content-Type': 'application/json'
       }
     });
-    if (response.status === 201) {
-      let user = await response.json();
-      console.log('user:', user);
+    if (response) {
+      return this.updateProfile(result.user);
     } else {
-      let newUser = await response.json();
-      console.log('new user:', newUser);
+      alert('Error on databse connection');
     }
-    return null;
   };
 
   updateProfile = user => store.dispatch(getUser(user.id));
@@ -90,7 +88,7 @@ class LoginScreen extends React.Component {
 const LoginPage = props => {
   return (
     <View>
-      <MonoText style={styles.header}>Sign In With Google</MonoText>
+      <MontserratText style={styles.header}>Sign In With Google</MontserratText>
       <Button
         title='Sign In'
         style={styles.button}
@@ -103,12 +101,14 @@ const LoginPage = props => {
 const LoggedInPage = props => {
   return (
     <View style={styles.container}>
-      <MonoText style={styles.header}>Welcome: {props.name}</MonoText>
+      <MontserratText style={styles.header}>
+        Welcome: {props.name}
+      </MontserratText>
       <Image style={styles.image} source={{ uri: props.photoUrl }} />
       <View style={styles.info}>
-        <MonoText>Profile: see your stats!</MonoText>
-        <MonoText>Timer: start a session!</MonoText>
-        <MonoText>Home: learn about Meditation Timer!</MonoText>
+        <MontserratText>Profile: see your stats!</MontserratText>
+        <MontserratText>Timer: start a session!</MontserratText>
+        <MontserratText>Home: learn about Meditation Timer!</MontserratText>
       </View>
     </View>
   );

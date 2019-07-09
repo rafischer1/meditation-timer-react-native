@@ -58,9 +58,13 @@ class TimerScreen extends React.Component {
       alert('Session logged!');
       return this.setState({ finished: false });
     } else {
-      alert("Session didn't log for some reason:", response.status);
+      alert('Session was not able to be logged:', response.status);
       return this.setState({ finished: false });
     }
+  };
+
+  _cancelSession = () => {
+    return this.setState({ finished: false });
   };
 
   componentDidMount() {
@@ -105,7 +109,7 @@ class TimerScreen extends React.Component {
             onChange={value => this.setState({ value })}
             onLimitReached={(isMax, msg) => console.log(isMax, msg)}
             totalWidth={250}
-            totalHeight={60}
+            totalHeight={75}
             iconSize={30}
             step={1}
             valueType='integer'
@@ -118,35 +122,47 @@ class TimerScreen extends React.Component {
         </View>
         {!this.state.finished ? (
           <View>
-            <View style={styles.button}>
+            <View style={styles.buttonStart}>
               <Button
-                style={styles.button}
                 onPress={() => this._startButton(this.state.value)}
                 title='Start'
-                color='#27229E'
+                color='white'
                 accessibilityLabel='Start the meditation timer'
               />
             </View>
-            <View style={styles.button}>
+            <View style={styles.buttonStop}>
               <Button
                 onPress={() => this._stopButton()}
                 title='Stop'
-                color='#27229E'
+                color='white'
                 accessibilityLabel='Stop the meditation timer'
               />
             </View>
           </View>
         ) : (
-          <View style={styles.button}>
-            <Button
-              onPress={() =>
-                this._postSession(this.props.user.authid, this.state.timerValue)
-              }
-              title='🔔 Log Session? 🔔'
-              color='#27229E'
-              accessibilityLabel='Log the session to your profile'
-            />
-          </View>
+          <ScrollView>
+            <View style={styles.button}>
+              <Button
+                onPress={() =>
+                  this._postSession(
+                    this.props.user.authid,
+                    this.state.timerValue
+                  )
+                }
+                title='🔔 Log Session? 🔔'
+                color='#27229E'
+                accessibilityLabel='Log the session to your profile'
+              />
+            </View>
+            <View style={styles.cancelButton}>
+              <Button
+                onPress={() => this._cancelSession()}
+                title='Cancel Session'
+                color='#229E84'
+                accessibilityLabel='Log the session to your profile'
+              />
+            </View>
+          </ScrollView>
         )}
       </ScrollView>
     );
@@ -154,7 +170,7 @@ class TimerScreen extends React.Component {
 }
 
 TimerScreen.navigationOptions = {
-  title: '⏳ Meditation Timer ⏲'
+  title: 'Timer'
 };
 
 function mapStateToProps(state) {
@@ -181,9 +197,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     backgroundColor: 'white',
     borderRadius: 5,
-    borderWidth: 2,
-    borderColor: '#84229E',
     backgroundOpacity: 2
+  },
+  buttonStart: {
+    backgroundColor: '#27229E',
+    marginBottom: 10,
+    padding: 5,
+    borderRadius: 5
+  },
+  buttonStop: {
+    backgroundColor: '#229E84',
+    padding: 5,
+    borderRadius: 5
+  },
+  cancelButton: {
+    backgroundColor: 'black'
   }
 });
 

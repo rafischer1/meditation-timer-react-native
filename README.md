@@ -42,4 +42,6 @@ TODO
 
 [] Timer saving total time elapsed in state and sending to the database - automatically updates profile
 
+[] Styling for all components (esp Profile signedIn)
+
 ![Basic Timer Dev Layout](./assets/images/wireframBasic.png 'Basic Timer Dev Layout')

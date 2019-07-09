@@ -10,7 +10,7 @@ import {
   ImageBackground,
   View
 } from 'react-native';
-import { MonoText } from '../components/StyledText';
+import { MontserratText } from '../components/StyledText';
 
 export default function HomeScreen() {
   return (
@@ -24,13 +24,11 @@ export default function HomeScreen() {
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
-      >
-        <Text style={styles.container}>This is the meditation app</Text>
-      </ScrollView>
-      <MonoText style={styles.bottom}>
+      />
+      <MontserratText style={styles.bottom}>
         Welcome to the Meditation Timer - Login to see personal progress and
         navigate to the timer tab to begin an anonymous session
-      </MonoText>
+      </MontserratText>
     </ImageBackground>
   );
 }
@@ -48,6 +46,10 @@ const styles = StyleSheet.create({
     fontSize: 18
   },
   bottom: {
+    paddingBottom: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
+    fontSize: 16,
     flex: 'flex-end',
     color: 'white'
   }

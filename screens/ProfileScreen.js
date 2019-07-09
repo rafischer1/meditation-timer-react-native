@@ -1,7 +1,14 @@
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Text, View, StyleSheet, Image, Button } from 'react-native';
-import { MonoText } from '../components/StyledText';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Button,
+  ImageBackground
+} from 'react-native';
+import { MontserratText } from '../components/StyledText';
 import { connect } from 'react-redux';
 const faker = require('faker');
 
@@ -58,12 +65,14 @@ class ProfileScreen extends React.Component {
     return (
       <ScrollView style={styles.container}>
         {!this.props.user ? (
-          <MonoText style={styles.altText}>Login in to see profile</MonoText>
+          <MontserratText style={styles.altText}>
+            Login in to see profile
+          </MontserratText>
         ) : (
           <ScrollView style={styles.container}>
-            <MonoText style={styles.altText}>
-              {this.props.user.username}'s Profile 🌺
-            </MonoText>
+            <MontserratText style={styles.altText}>
+              {this.props.user.username}'s Sessions Log
+            </MontserratText>
             <View style={styles.shadow}>
               <Image
                 style={{
@@ -104,9 +113,7 @@ class ProfileScreen extends React.Component {
   }
 }
 
-ProfileScreen.navigationOptions = {
-  title: 'Profile'
-};
+ProfileScreen.navigationOptions = { title: 'Profile' };
 
 function mapStateToProps(state) {
   const user = state;
@@ -131,9 +138,7 @@ const FormatDate = createdAt => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    color: 'white',
     alignItems: 'center',
-    backgroundColor: 'white',
     justifyContent: 'flex-start',
     paddingTop: 30
   },
@@ -152,11 +157,14 @@ const styles = StyleSheet.create({
   },
   altText: {
     fontSize: 24,
-    margin: 20,
+    margin: 75,
+    marginTop: 100,
+    color: 'black',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#27229E'
   },
   shadow: {
+    alignItems: 'center',
     shadowOffset: { width: 5, height: 5 },
     shadowColor: 'grey',
     shadowOpacity: 1.0

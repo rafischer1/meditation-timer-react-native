@@ -20,7 +20,7 @@ LoginStack.navigationOptions = {
   tabBarLabel: 'Login',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
-      color='#84229E'
+      color='#27229E'
       focused={focused}
       name={Platform.OS === 'ios' ? 'ios-flower' : 'md-flower'}
     />
@@ -35,7 +35,7 @@ HomeStack.navigationOptions = {
   tabBarLabel: 'Home',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
-      color='#84229E'
+      color='#27229E'
       focused={focused}
       name={Platform.OS === 'ios' ? 'ios-rose' : 'md-rose'}
     />
@@ -50,7 +50,7 @@ TimerStack.navigationOptions = {
   tabBarLabel: 'Timer',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
-      color='#229E84'
+      color='#27229E'
       focused={focused}
       name={Platform.OS === 'ios' ? 'ios-alarm' : 'md-alarm'}
     />

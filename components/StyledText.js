@@ -6,3 +6,9 @@ export function MonoText(props) {
     <Text {...props} style={[props.style, { fontFamily: 'space-mono' }]} />
   );
 }
+
+export function MontserratText(props) {
+  return (
+    <Text {...props} style={[props.style, { fontFamily: 'Montserrat' }]} />
+  );
+}
