@@ -1,15 +1,11 @@
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  Button,
-  ImageBackground
-} from 'react-native';
+import { View, StyleSheet, Image, Button } from 'react-native';
+import { ListItem } from 'react-native-elements';
 import { MontserratText } from '../components/StyledText';
 import { connect } from 'react-redux';
+import TouchableScale from 'react-native-touchable-scale';
+import Swipeout from 'react-native-swipeout';
 const faker = require('faker');
 
 class ProfileScreen extends React.Component {
@@ -25,13 +21,16 @@ class ProfileScreen extends React.Component {
       photoUrl: faker.image.cats(),
       givenName: '',
       sessions: [],
-      total: 0
+      total: 0,
+      toDelete: 0
     };
   }
 
-  fetchSession = async () => {
+  fetchSessions = async () => {
     let response = await fetch(
-      `http://localhost:3000/sessions/${this.props.user.authid}`
+      `https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/sessions/${
+        this.props.user.authid
+      }`
     );
     let sessions = await response.json();
     if (sessions.length === 0) {
@@ -49,6 +48,18 @@ class ProfileScreen extends React.Component {
     });
   };
 
+  deleteSession = async id => {
+    let response = await fetch(
+      `https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/sessions/${id}`,
+      {
+        method: 'DELETE'
+      }
+    );
+    let deleted = await response.json();
+    console.log('deleted sessions:', deleted);
+    return this.fetchSessions();
+  };
+
   componentDidMount() {
     if (!this.props.user) {
       return null;
@@ -61,50 +72,92 @@ class ProfileScreen extends React.Component {
     }
   }
 
+  swipeBtns = [
+    {
+      text: 'Delete',
+      backgroundColor: 'red',
+      underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
+      onPress: () => {
+        console.log('to delete:', this.state.toDelete);
+        this.deleteSession(this.state.toDelete);
+        return this.fetchSessions();
+      }
+    }
+  ];
+
   render() {
     return (
       <ScrollView style={styles.container}>
         {!this.props.user ? (
-          <MontserratText style={styles.altText}>
+          <MontserratText style={(styles.altText, styles.loginMsg)}>
             Login in to see profile
           </MontserratText>
         ) : (
-          <ScrollView style={styles.container}>
-            <MontserratText style={styles.altText}>
-              {this.props.user.username}'s Sessions Log
-            </MontserratText>
+          <View>
             <View style={styles.shadow}>
               <Image
                 style={{
                   width: 80,
-                  alignItems: 'center',
                   height: 80,
                   borderRadius: 5
                 }}
                 source={{ uri: this.props.user.photo }}
               />
             </View>
-            <Button
-              onPress={() => this.fetchSession(this.props.user.authid)}
-              title='Get Sessions for user'
-              color='#27229E'
-              accessibilityLabel='Log the session to your profile'
-            />
-            <Text style={styles.altText}>
-              Total time in meditation: {this.state.total} min
-            </Text>
-          </ScrollView>
+            <View style={styles.button}>
+              <Button
+                onPress={() => this.fetchSessions()}
+                title={`See ${this.props.user.username}'s Sessions`}
+                color='white'
+                accessibilityLabel='Log the session to your profile'
+              />
+            </View>
+            <MontserratText style={styles.altText}>
+              Sessions Total: {this.state.total} min
+            </MontserratText>
+          </View>
         )}
 
-        {this.state.sessions.map(session => {
+        {this.state.sessions.map((session, i) => {
           return (
             <View style={styles.sessionDiv}>
-              <Text style={styles.sessions}>
-                Session date: {FormatDate(session.created_at)}
-              </Text>
-              <Text style={styles.sessions}>
-                Session duration: {session.duration} min
-              </Text>
+              <Swipeout
+                right={this.swipeBtns}
+                autoClose='true'
+                backgroundColor='transparent'
+              >
+                <ListItem
+                  Component={TouchableScale}
+                  friction={90} //
+                  tension={100} // These props are passed to the parent component (here TouchableScale)
+                  activeScale={0.95} //
+                  onPress={() => this.setState({ toDelete: session.id })}
+                  linearGradientProps={{
+                    colors: ['#229E84', '#27229E'],
+                    start: [1, 0],
+                    end: [0.2, 0]
+                  }}
+                  // Only if no expo
+                  leftAvatar={{
+                    rounded: true,
+                    source: { uri: this.props.user.photo }
+                  }}
+                  title='Date'
+                  titleStyle={{ color: 'white', fontWeight: 'bold' }}
+                  subtitleStyle={{ color: 'white' }}
+                  subtitle={`${FormatDate(session.created_at)} Duration: ${
+                    session.duration
+                  } min`}
+                  checkmarkColor='white'
+                  checkmark
+                />
+                <ListItem
+                  key={i}
+                  title={'Notes'}
+                  onPress={() => this.setState({ toDelete: session.id })}
+                  subtitle={session.notes}
+                />
+              </Swipeout>
             </View>
           );
         })}
@@ -135,30 +188,38 @@ const FormatDate = createdAt => {
   return date;
 };
 
+// -=-Stylesheet Definition-=-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: 30
+    paddingTop: 40
+  },
+  loggedIn: {
+    alignItems: 'center'
+  },
+  loginMsg: {
+    paddingTop: 20,
+    marginTop: 90,
+    fontSize: 24
   },
   sessionDiv: {
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 5,
-    margin: 4,
+    margin: 1,
     borderColor: '#27229E'
   },
   sessions: {
+    fontWeight: 'bold',
     alignItems: 'center',
     fontSize: 14,
-    color: '#229E84',
-    margin: 4
+    color: '#229E84'
   },
   altText: {
-    fontSize: 24,
+    fontSize: 22,
     margin: 75,
-    marginTop: 100,
     color: 'black',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#27229E'
@@ -168,5 +229,17 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 5, height: 5 },
     shadowColor: 'grey',
     shadowOpacity: 1.0
+  },
+  button: {
+    width: '66%',
+    color: 'white',
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginTop: 10,
+    marginLeft: '16.5%',
+    textAlign: 'center',
+    backgroundColor: 'teal',
+    borderRadius: 5,
+    backgroundOpacity: 2
   }
 });

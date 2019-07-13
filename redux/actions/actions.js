@@ -4,7 +4,9 @@ export const USER_FAILED = 'USER_FAILED';
 export const getUser = id => {
   return async dispatch => {
     try {
-      let response = await fetch(`http://localhost:3000/users/${id}`);
+      let response = await fetch(
+        `https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/users/${id}`
+      );
       let user = await response.json();
       dispatch({
         type: USER_SUCCESS,

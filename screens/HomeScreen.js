@@ -37,6 +37,7 @@ HomeScreen.navigationOptions = {
   header: null
 };
 
+// -=-Stylesheet Definition-=-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

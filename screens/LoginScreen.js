@@ -1,10 +1,17 @@
 import React from 'react';
-import { StyleSheet, View, Image, Button, ImageBackground } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Button,
+  TouchableHighlight
+} from 'react-native';
 import { Google } from 'expo';
 import { MontserratText } from '../components/StyledText';
 import store from '../redux/store';
 import { getUser, USER_SUCCESS } from '../redux/actions/actions';
 import { connect } from 'react-redux';
+import { ScrollView } from 'react-native-gesture-handler';
 
 class LoginScreen extends React.Component {
   constructor(props) {
@@ -56,13 +63,16 @@ class LoginScreen extends React.Component {
       email: result.user.email
     };
     console.log('logincall result body:', postBody);
-    let response = await fetch('http://localhost:3000/users', {
-      method: 'POST',
-      body: JSON.stringify(postBody),
-      headers: {
-        'Content-Type': 'application/json'
+    let response = await fetch(
+      'https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/users',
+      {
+        method: 'POST',
+        body: JSON.stringify(postBody),
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
     if (response) {
       return this.updateProfile(result.user);
     } else {
@@ -70,13 +80,27 @@ class LoginScreen extends React.Component {
     }
   };
 
+  logout = () => {
+    return this.setState({ signedIn: false });
+  };
   updateProfile = user => store.dispatch(getUser(user.id));
 
   render() {
     return (
       <View style={styles.container}>
         {this.state.signedIn ? (
-          <LoggedInPage name={this.state.name} photoUrl={this.state.photo} />
+          <ScrollView style={{ paddingTop: 100 }}>
+            <LoggedInPage name={this.state.name} photoUrl={this.state.photo} />
+            <TouchableHighlight style={styles.button}>
+              <Button
+                onPress={() => this.logout()}
+                title='Logout'
+                style={styles.button}
+                color='black'
+                accessibilityLabel='Log the session to your profile'
+              />
+            </TouchableHighlight>
+          </ScrollView>
         ) : (
           <LoginPage signIn={this.signIn} />
         )}
@@ -88,6 +112,19 @@ class LoginScreen extends React.Component {
 const LoginPage = props => {
   return (
     <View>
+      <View style={styles.shadow}>
+        <Image
+          style={{
+            width: 250,
+            height: 400,
+            borderRadius: 5
+          }}
+          source={{
+            uri:
+              'https://images.unsplash.com/photo-1532918235359-7671f525386d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80'
+          }}
+        />
+      </View>
       <MontserratText style={styles.header}>Sign In With Google</MontserratText>
       <Button
         title='Sign In'
@@ -99,16 +136,31 @@ const LoginPage = props => {
 };
 
 const LoggedInPage = props => {
+  const logoutCallback = () => {
+    console.log(props.logout);
+    return props.logout();
+  };
   return (
     <View style={styles.container}>
       <MontserratText style={styles.header}>
         Welcome: {props.name}
       </MontserratText>
-      <Image style={styles.image} source={{ uri: props.photoUrl }} />
+      <View style={styles.shadow}>
+        <Image style={styles.image} source={{ uri: props.photoUrl }} />
+      </View>
       <View style={styles.info}>
-        <MontserratText>Profile: see your stats!</MontserratText>
-        <MontserratText>Timer: start a session!</MontserratText>
-        <MontserratText>Home: learn about Meditation Timer!</MontserratText>
+        <MontserratText style={styles.font}>
+          Profile: see your stats!
+        </MontserratText>
+        <MontserratText style={styles.font}>
+          Timer: start a session!
+        </MontserratText>
+        <MontserratText style={styles.font}>
+          Chat: engage with other practicioners!
+        </MontserratText>
+        <MontserratText style={styles.font}>
+          Home: learn about Meditation Timer!
+        </MontserratText>
       </View>
     </View>
   );
@@ -130,6 +182,7 @@ export default connect(
   mapDispatchToProps
 )(LoginScreen);
 
+// -=-Stylesheet Definition-=-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -141,22 +194,39 @@ const styles = StyleSheet.create({
     fontSize: 25,
     padding: 10
   },
+  shadow: {
+    alignItems: 'center',
+    shadowOffset: { width: 5, height: 5 },
+    shadowColor: 'grey',
+    shadowOpacity: 1.0
+  },
   image: {
     marginTop: 15,
-    width: 150,
-    height: 150,
-    borderColor: 'rgba(0,0,0,0.2)',
-    borderWidth: 3,
-    borderRadius: 150
+    marginBottom: 15,
+    width: 100,
+    height: 100,
+    borderRadius: 5
   },
   info: {
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 26,
     borderWidth: 3,
-    width: 200,
-    height: 200,
+    color: 'white',
+    fontFamily: 'menlo',
     padding: 10,
-    borderColor: '#84229E',
-    borderRadius: 10
+    borderColor: 'white',
+    borderRadius: 5
+  },
+  button: {
+    width: 250,
+    marginLeft: 50,
+    borderWidth: 2,
+    borderColor: 'black',
+    padding: 10,
+    margin: 10,
+    borderRadiu: 5
+  },
+  font: {
+    fontSize: 20
   }
 });

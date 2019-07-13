@@ -6,7 +6,7 @@
 react-native
 react-navigation
 expo
-Google oAuth2
+Google 0Auth2
 
 ({Secondary Packages})
 react-native-numeric-input
@@ -20,6 +20,8 @@ react-native-numeric-input
 [Trello Board](https://trello.com/b/mEUYefim/med-timer-native-app)
 
 [Redux](https://redux.js.org/basics/usage-with-react)
+
+[Jest R/N Testing 🤹‍](https://jestjs.io/docs/en/tutorial-react-native)
 
 Google Auth object:
 
@@ -36,7 +38,7 @@ Google Auth object:
 
 ---
 
-TODO
+### TODO
 
 [] Login route always passing props to the profile route - signedIn toggling faulty
 
@@ -45,3 +47,5 @@ TODO
 [] Styling for all components (esp Profile signedIn)
 
 ![Basic Timer Dev Layout](./assets/images/wireframBasic.png 'Basic Timer Dev Layout')
+
+---

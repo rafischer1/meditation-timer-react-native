@@ -1,9 +1,11 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Button, View } from 'react-native';
+import { ScrollView, StyleSheet, Button, View, TextInput } from 'react-native';
 import CountDown from 'react-native-countdown-component';
 import NumericInput from 'react-native-numeric-input';
 import { MonoText } from '../components/StyledText';
 import { connect } from 'react-redux';
+import { Audio } from 'expo-av';
+import { Input } from 'react-native-elements';
 
 class TimerScreen extends React.Component {
   constructor(props) {
@@ -18,6 +20,18 @@ class TimerScreen extends React.Component {
       finished: false
     };
   }
+
+  _playSound = async () => {
+    soundObject = new Audio.Sound();
+    try {
+      await soundObject.loadAsync(require('../assets/sounds/bell.mp3'));
+      await soundObject.playAsync();
+      // Your sound is playing!
+    } catch (err) {
+      // An error occurred!
+      console.log('sound error:', err);
+    }
+  };
 
   _startButton(value) {
     console.log('value:', value);
@@ -37,15 +51,19 @@ class TimerScreen extends React.Component {
 
   _finishedCall(msg) {
     console.log(`${msg}: ring the alarm!`);
+    this._playSound();
     return this.setState({ finished: true });
   }
 
-  _postSession = async (id, duration) => {
+  _postSession = async (id, duration, notes) => {
     let postBody = {
-      duration: duration
+      duration,
+      notes
     };
     let response = await fetch(
-      `http://localhost:3000/sessions/${this.props.user.authid}`,
+      `https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/sessions/${
+        this.props.user.authid
+      }`,
       {
         method: 'POST',
         body: JSON.stringify(postBody),
@@ -141,16 +159,28 @@ class TimerScreen extends React.Component {
           </View>
         ) : (
           <ScrollView>
+            <Input
+              placeholder='Session Notes'
+              containerStyle={{
+                backgroundColor: 'white',
+                padding: 10,
+                borderRadius: 5
+              }}
+              onChangeText={text => this.setState({ text })}
+              value={this.state.text}
+              spellCheck={true}
+            />
             <View style={styles.button}>
               <Button
                 onPress={() =>
                   this._postSession(
                     this.props.user.authid,
-                    this.state.timerValue
+                    this.state.timerValue,
+                    this.state.text
                   )
                 }
-                title='🔔 Log Session? 🔔'
-                color='#27229E'
+                title='Log Session'
+                color='white'
                 accessibilityLabel='Log the session to your profile'
               />
             </View>
@@ -169,9 +199,7 @@ class TimerScreen extends React.Component {
   }
 }
 
-TimerScreen.navigationOptions = {
-  title: 'Timer'
-};
+TimerScreen.navigationOptions = { title: 'Timer' };
 
 function mapStateToProps(state) {
   const user = state;
@@ -180,6 +208,7 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps)(TimerScreen);
 
+// -=-Stylesheet Definition-=-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -193,9 +222,10 @@ const styles = StyleSheet.create({
   button: {
     paddingTop: 10,
     paddingBottom: 10,
+    marginTop: 10,
     marginBottom: 10,
     textAlign: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#27229E',
     borderRadius: 5,
     backgroundOpacity: 2
   },

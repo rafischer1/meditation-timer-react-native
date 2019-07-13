@@ -5,6 +5,7 @@ import {
   createBottomTabNavigator
 } from 'react-navigation';
 
+// -=-Screens-=-
 import TabBarIcon from '../components/TabBarIcon';
 import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -12,9 +13,8 @@ import TimerScreen from '../screens/TimerScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import ChatScreen from '../screens/ChatScreen';
 
-const LoginStack = createStackNavigator({
-  Login: LoginScreen
-});
+// -=-Stack Definitions-=-
+const LoginStack = createStackNavigator({ Login: LoginScreen });
 
 LoginStack.navigationOptions = {
   tabBarLabel: 'Login',
@@ -27,9 +27,7 @@ LoginStack.navigationOptions = {
   )
 };
 
-const HomeStack = createStackNavigator({
-  Home: HomeScreen
-});
+const HomeStack = createStackNavigator({ Home: HomeScreen });
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Home',
@@ -42,9 +40,7 @@ HomeStack.navigationOptions = {
   )
 };
 
-const TimerStack = createStackNavigator({
-  Link: TimerScreen
-});
+const TimerStack = createStackNavigator({ Link: TimerScreen });
 
 TimerStack.navigationOptions = {
   tabBarLabel: 'Timer',
@@ -57,9 +53,7 @@ TimerStack.navigationOptions = {
   )
 };
 
-const ChatStack = createStackNavigator({
-  Chat: ChatScreen
-});
+const ChatStack = createStackNavigator({ Chat: ChatScreen });
 
 ChatStack.navigationOptions = {
   tabBarLabel: 'Chat',
@@ -72,9 +66,7 @@ ChatStack.navigationOptions = {
   )
 };
 
-const ProfileStack = createStackNavigator({
-  Profile: ProfileScreen
-});
+const ProfileStack = createStackNavigator({ Profile: ProfileScreen });
 
 ProfileStack.navigationOptions = {
   tabBarLabel: 'Profile',
