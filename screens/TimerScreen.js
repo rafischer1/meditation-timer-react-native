@@ -16,7 +16,7 @@ class TimerScreen extends React.Component {
       timerValue: 0,
       running: false,
       id: 1,
-      duration: 13,
+      duration: 2,
       finished: false
     };
   }
@@ -26,15 +26,12 @@ class TimerScreen extends React.Component {
     try {
       await soundObject.loadAsync(require('../assets/sounds/bell.mp3'));
       await soundObject.playAsync();
-      // Your sound is playing!
     } catch (err) {
-      // An error occurred!
       console.log('sound error:', err);
     }
   };
 
   _startButton(value) {
-    console.log('value:', value);
     return this.setState({
       timerValue: value,
       signedIn: false,
@@ -50,7 +47,6 @@ class TimerScreen extends React.Component {
   }
 
   _finishedCall(msg) {
-    console.log(`${msg}: ring the alarm!`);
     this._playSound();
     return this.setState({ finished: true });
   }
@@ -61,9 +57,7 @@ class TimerScreen extends React.Component {
       notes
     };
     let response = await fetch(
-      `https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/sessions/${
-        this.props.user.authid
-      }`,
+      `https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/sessions/${id}`,
       {
         method: 'POST',
         body: JSON.stringify(postBody),
@@ -77,12 +71,16 @@ class TimerScreen extends React.Component {
       return this.setState({ finished: false });
     } else {
       alert('Session was not able to be logged:', response.status);
-      return this.setState({ finished: false });
+      return this.setState({ finished: false, running: false, timerValue: 0 });
     }
   };
 
   _cancelSession = () => {
-    return this.setState({ finished: false });
+    return this.setState({
+      finished: false,
+      running: false,
+      timerValue: 0
+    });
   };
 
   componentDidMount() {
@@ -90,7 +88,6 @@ class TimerScreen extends React.Component {
       user: this.props.user,
       signedIn: true
     });
-    console.log('timer profile:', this.props.user);
   }
 
   render() {
@@ -172,13 +169,17 @@ class TimerScreen extends React.Component {
             />
             <View style={styles.button}>
               <Button
-                onPress={() =>
-                  this._postSession(
-                    this.props.user.authid,
-                    this.state.timerValue,
-                    this.state.text
-                  )
-                }
+                onPress={() => {
+                  if (!this.props.user) {
+                    alert('sign in to log sessions');
+                  } else {
+                    return this._postSession(
+                      this.props.user.authid,
+                      this.state.timerValue,
+                      this.state.text
+                    );
+                  }
+                }}
                 title='Log Session'
                 color='white'
                 accessibilityLabel='Log the session to your profile'
@@ -229,6 +230,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundOpacity: 2
   },
+  shadow: {
+    alignItems: 'center',
+    shadowOffset: { width: 5, height: 5 },
+    shadowColor: 'grey',
+    shadowOpacity: 1.0
+  },
   buttonStart: {
     backgroundColor: '#27229E',
     marginBottom: 10,
@@ -244,5 +251,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'black'
   }
 });
-
-// http POST https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/sessions/1 duration=20 id here is the authId

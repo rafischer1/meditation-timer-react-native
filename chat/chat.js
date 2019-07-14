@@ -26,7 +26,6 @@ chatSignUpCallback = async (username, password) => {
     let user = await loginCallback(reqBody);
     console.log('user in callback:', user);
     return user;
-    // alert('🚨: Username already exists in database!');
   }
 };
 

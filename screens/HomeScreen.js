@@ -1,15 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import {
-  Image,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ImageBackground,
-  View
-} from 'react-native';
+import { ScrollView, StyleSheet, ImageBackground } from 'react-native';
 import { MontserratText } from '../components/StyledText';
 
 export default function HomeScreen() {

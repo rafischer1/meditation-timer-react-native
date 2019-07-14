@@ -48,4 +48,6 @@ Google Auth object:
 
 ![Basic Timer Dev Layout](./assets/images/wireframBasic.png 'Basic Timer Dev Layout')
 
+![Basic Session Dev Layout](./assets/images/wireframeSessions.png 'Basic Sessions Dev Layout')
+
 ---

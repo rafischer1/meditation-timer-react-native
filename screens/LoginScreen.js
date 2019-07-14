@@ -4,7 +4,8 @@ import {
   View,
   Image,
   Button,
-  TouchableHighlight
+  TouchableHighlight,
+  ActivityIndicator
 } from 'react-native';
 import { Google } from 'expo';
 import { MontserratText } from '../components/StyledText';
@@ -96,7 +97,7 @@ class LoginScreen extends React.Component {
                 onPress={() => this.logout()}
                 title='Logout'
                 style={styles.button}
-                color='black'
+                color='white'
                 accessibilityLabel='Log the session to your profile'
               />
             </TouchableHighlight>
@@ -123,14 +124,13 @@ const LoginPage = props => {
             uri:
               'https://images.unsplash.com/photo-1532918235359-7671f525386d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80'
           }}
+          PlaceholderContent={<ActivityIndicator />}
         />
       </View>
-      <MontserratText style={styles.header}>Sign In With Google</MontserratText>
-      <Button
-        title='Sign In'
-        style={styles.button}
-        onPress={() => props.signIn()}
-      />
+      <MontserratText style={styles.header}>Sign In with Google</MontserratText>
+      <View style={{ fontSize: 26 }}>
+        <Button title='Sign In' onPress={() => props.signIn()} />
+      </View>
     </View>
   );
 };
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   header: {
-    fontSize: 25,
+    fontSize: 30,
     padding: 10
   },
   shadow: {
@@ -220,11 +220,13 @@ const styles = StyleSheet.create({
   button: {
     width: 250,
     marginLeft: 50,
-    borderWidth: 2,
-    borderColor: 'black',
-    padding: 10,
+    borderWidth: 1,
+    borderColor: 'white',
+    backgroundColor: 'black',
+    padding: 5,
+    marginTop: 10,
     margin: 10,
-    borderRadiu: 5
+    borderRadius: 10
   },
   font: {
     fontSize: 20

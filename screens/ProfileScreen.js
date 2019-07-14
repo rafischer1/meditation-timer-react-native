@@ -1,6 +1,12 @@
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import { View, StyleSheet, Image, Button } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  Button,
+  ActivityIndicator
+} from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { MontserratText } from '../components/StyledText';
 import { connect } from 'react-redux';
@@ -55,16 +61,17 @@ class ProfileScreen extends React.Component {
         method: 'DELETE'
       }
     );
-    let deleted = await response.json();
-    console.log('deleted sessions:', deleted);
-    return this.fetchSessions();
+    if (response.status === 200) {
+      return this.fetchSessions();
+    } else {
+      alert('Session delete error');
+    }
   };
 
   componentDidMount() {
     if (!this.props.user) {
       return null;
     } else {
-      console.log('component mount props:', this.props.user);
       this.setState({
         user: this.props.user,
         signedIn: true
@@ -78,7 +85,6 @@ class ProfileScreen extends React.Component {
       backgroundColor: 'red',
       underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
       onPress: () => {
-        console.log('to delete:', this.state.toDelete);
         this.deleteSession(this.state.toDelete);
         return this.fetchSessions();
       }
@@ -89,9 +95,26 @@ class ProfileScreen extends React.Component {
     return (
       <ScrollView style={styles.container}>
         {!this.props.user ? (
-          <MontserratText style={(styles.altText, styles.loginMsg)}>
-            Login in to see profile
-          </MontserratText>
+          <ScrollView>
+            <View style={styles.shadow}>
+              <Image
+                style={{
+                  width: 250,
+                  height: 400,
+                  borderRadius: 5,
+                  marginTop: 40
+                }}
+                source={{
+                  uri:
+                    'https://images.unsplash.com/photo-1507400492013-162706c8c05e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=909&q=80'
+                }}
+                PlaceholderContent={<ActivityIndicator />}
+              />
+            </View>
+            <MontserratText style={{ fontSize: 30, paddingTop: 5 }}>
+              Login in to see profile
+            </MontserratText>
+          </ScrollView>
         ) : (
           <View>
             <View style={styles.shadow}>
@@ -112,15 +135,14 @@ class ProfileScreen extends React.Component {
                 accessibilityLabel='Log the session to your profile'
               />
             </View>
-            <MontserratText style={styles.altText}>
+            <MontserratText style={{ fontSize: 30 }}>
               Sessions Total: {this.state.total} min
             </MontserratText>
           </View>
         )}
-
-        {this.state.sessions.map((session, i) => {
+        {this.state.sessions.map(session => {
           return (
-            <View style={styles.sessionDiv}>
+            <ScrollView style={styles.sessionDiv}>
               <Swipeout
                 right={this.swipeBtns}
                 autoClose='true'
@@ -131,34 +153,25 @@ class ProfileScreen extends React.Component {
                   friction={90} //
                   tension={100} // These props are passed to the parent component (here TouchableScale)
                   activeScale={0.95} //
-                  onPress={() => this.setState({ toDelete: session.id })}
+                  onPress={() => this.setState({ toDelete: +session.id })}
                   linearGradientProps={{
                     colors: ['#229E84', '#27229E'],
                     start: [1, 0],
                     end: [0.2, 0]
                   }}
-                  // Only if no expo
                   leftAvatar={{
                     rounded: true,
                     source: { uri: this.props.user.photo }
                   }}
-                  title='Date'
-                  titleStyle={{ color: 'white', fontWeight: 'bold' }}
-                  subtitleStyle={{ color: 'white' }}
-                  subtitle={`${FormatDate(session.created_at)} Duration: ${
+                  title={`${FormatDate(session.created_at)} Duration: ${
                     session.duration
                   } min`}
-                  checkmarkColor='white'
-                  checkmark
-                />
-                <ListItem
-                  key={i}
-                  title={'Notes'}
-                  onPress={() => this.setState({ toDelete: session.id })}
-                  subtitle={session.notes}
+                  titleStyle={{ color: 'white', fontWeight: 'bold' }}
+                  subtitleStyle={{ color: 'white' }}
+                  subtitle={`${session.notes}`}
                 />
               </Swipeout>
-            </View>
+            </ScrollView>
           );
         })}
       </ScrollView>
@@ -194,7 +207,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: 40
+    paddingTop: 30
   },
   loggedIn: {
     alignItems: 'center'
@@ -205,11 +218,9 @@ const styles = StyleSheet.create({
     fontSize: 24
   },
   sessionDiv: {
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 5,
-    margin: 1,
-    borderColor: '#27229E'
+    width: 400,
+    paddingBottom: 3,
+    borderRadius: 5
   },
   sessions: {
     fontWeight: 'bold',
@@ -218,8 +229,7 @@ const styles = StyleSheet.create({
     color: '#229E84'
   },
   altText: {
-    fontSize: 22,
-    margin: 75,
+    fontSize: 28,
     color: 'black',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#27229E'
@@ -231,15 +241,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 1.0
   },
   button: {
-    width: '66%',
     color: 'white',
-    paddingTop: 10,
-    paddingBottom: 10,
-    marginTop: 10,
-    marginLeft: '16.5%',
+    fontSize: 26,
+    padding: 3,
     textAlign: 'center',
     backgroundColor: 'teal',
     borderRadius: 5,
-    backgroundOpacity: 2
+    backgroundOpacity: 2,
+    margin: 25
   }
 });
