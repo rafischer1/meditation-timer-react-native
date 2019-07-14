@@ -1,15 +1,20 @@
 # Meditation Timer ⏳ React Native Application
 
-> A user logs in through google oAuth where a personal and configurable profile loads with views related to the meditation session timer, session tracking calendar, profile. ⏲
+> A user logs in through google oAuth where a personal profile loads with views related to the meditation session timer, session tracking, and chat board for updates and itneraction. ⏲
 
 ```haskell
 react-native
 react-navigation
+react-native-elements
 expo
 Google 0Auth2
+react-redux
+stream-chat
 
 ({Secondary Packages})
 react-native-numeric-input
+react-native-google-signin
+react-native-sound
 
 ```
 
