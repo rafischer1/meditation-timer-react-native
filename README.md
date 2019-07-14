@@ -40,11 +40,11 @@ Google Auth object:
 
 ### TODO
 
-[] Login route always passing props to the profile route - signedIn toggling faulty
+[x] Login route always passing props to the profile route - Redux
 
-[] Timer saving total time elapsed in state and sending to the database - automatically updates profile
+[x] Timer saving total time elapsed in state and sending to the database - automatically updates profile
 
-[] Styling for all components (esp Profile signedIn)
+[x] Styling for all components (esp Profile signedIn)
 
 ![Basic Timer Dev Layout](./assets/images/wireframBasic.png 'Basic Timer Dev Layout')
 
