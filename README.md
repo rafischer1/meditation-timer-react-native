@@ -65,4 +65,8 @@ Google Auth object:
 
 ![Basic Session Dev Layout](./assets/images/wireframeSessions.png 'Basic Sessions Dev Layout')
 
+![Basic Profile Dev Layout](./assets/images/profileScreen.png 'Basic Profile Dev Layout')
+
+![Basic Chat Dev Layout](./assets/images/chatScreen.png 'Basic Chat Dev Layout')
+
 ---
