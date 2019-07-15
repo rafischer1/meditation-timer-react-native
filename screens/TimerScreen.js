@@ -174,7 +174,7 @@ class TimerScreen extends React.Component {
                     alert('sign in to log sessions');
                   } else {
                     return this._postSession(
-                      this.props.user.authid,
+                      this.props.user.googleUser.authid,
                       this.state.timerValue,
                       this.state.text
                     );

@@ -1,19 +1,31 @@
-import React from 'react';
-import { View, SafeAreaView } from 'react-native';
+import React, { PureComponent } from 'react';
+import {
+  View,
+  SafeAreaView,
+  TouchableOpacity,
+  Text,
+  StyleSheet
+} from 'react-native';
 import { StreamChat } from 'stream-chat';
+import BasicScreen from './BasicScreen';
 import {
   Chat,
   Channel,
   MessageList,
   MessageInput,
-  Thread
+  ChannelList,
+  Thread,
+  ChannelPreviewMessenger,
+  CloseButton
 } from 'stream-chat-expo';
 import { connect } from 'react-redux';
-import chatSignUpCallback from '../chat/chat';
 const faker = require('faker');
+import { createAppContainer, createStackNavigator } from 'react-navigation';
 
-const userToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGVhZmlyc3RyZWNvcmRzIn0.P5IjAMTLx7TmN6AL_SPokaU-FcGCOAZWhQRMNFWs-CE';
+const chatClient = new StreamChat(
+  '22duw8598t3y',
+  '32knywdz384xrnqgzkmfrt3wm49yn3vsvrgw59gpcac6kujzv27jedjsz2bfy3dh'
+);
 
 const theme = {
   'avatar.image': 'border-radius: 8px',
@@ -23,54 +35,72 @@ const theme = {
   }
 };
 
-class ChannelScreen extends React.Component {
+class ChannelScreen extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      user: {}
+      user: {},
+      signedIn: false,
+      token: '1',
+      username: ''
     };
   }
 
-  chatClient = new StreamChat(
-    'b26yk5m25hdm',
-    'gzqbum3wdcxnbdsg9fr5m99wcfbr394d5k48ty53gw2j499a2vrj75283uk54axp'
-  );
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerTitle: (
+        <Text style={{ fontWeight: 'bold', height: 20 }}>Med Timer Chat</Text>
+      )
+    };
+  };
 
   render() {
-    this.chatClient.disconnect();
-    this.chatClient.setUser(
-      {
-        id: 'teafirstrecords',
-        name: 'teafirstrecords',
-        image: faker.image.cats()
-      },
-      userToken
-    );
+    console.log('screenProps:', this.props.screenProps === undefined);
+    {
+      return this.props.screenProps === undefined
+        ? basicScreen()
+        : chatWithUserScreen(this.props);
+    }
+  }
+}
 
-    const channel = this.chatClient.channel('messaging', '52380');
-    channel.watch();
-    return !this.props.user ? (
+class ThreadScreen extends PureComponent {
+  static navigationOptions = ({ navigation }) => ({
+    headerTitle: <Text style={{ fontWeight: 'bold' }}>Thread</Text>,
+    headerLeft: null,
+    headerRight: (
+      <TouchableOpacity
+        onPress={() => {
+          navigation.goBack();
+        }}
+        style={{ marginRight: 20 }}
+      >
+        <CloseButton style={theme} />
+      </TouchableOpacity>
+    )
+  });
+
+  render() {
+    // console.log('props in thread:', this.props);
+    // const { navigation, chatClient, channel } = this.props;
+    // const thread = navigation.getParam('thread');
+    // const channel = chatClient.channel('messaging', '55341');
+    const { navigation } = this.props;
+    const thread = navigation.getParam('thread');
+    const channel = chatClient.channel('messaging', '55341');
+    return (
       <SafeAreaView>
-        <Chat client={this.chatClient} style={theme}>
-          <Channel channel={channel}>
-            <View style={{ display: 'flex', height: '99%' }}>
-              <MessageList />
-              <MessageInput />
+        <Chat client={chatClient}>
+          <Channel client={chatClient} channel={channel} thread={thread}>
+            <View
+              style={{
+                display: 'flex',
+                height: '100%',
+                justifyContent: 'flex-start'
+              }}
+            >
+              <Thread thread={thread} />
             </View>
-            <Thread />
-          </Channel>
-        </Chat>
-      </SafeAreaView>
-    ) : (
-      <SafeAreaView>
-        {/* <ClientChat client={this.props.user} photo={this.props.user.photo} /> */}
-        <Chat client={this.chatClient} style={theme}>
-          <Channel channel={channel}>
-            <View style={{ display: 'flex', height: '99%' }}>
-              <MessageList />
-              <MessageInput />
-            </View>
-            <Thread />
           </Channel>
         </Chat>
       </SafeAreaView>
@@ -78,50 +108,21 @@ class ChannelScreen extends React.Component {
   }
 }
 
-// const ClientChat = ({ client, photo }) => {
-//   const chatClient = new StreamChat(
-//     'b26yk5m25hdm',
-//     'gzqbum3wdcxnbdsg9fr5m99wcfbr394d5k48ty53gw2j499a2vrj75283uk54axp'
-//   );
+const RootStack = createStackNavigator(
+  {
+    Channel: {
+      screen: ChannelScreen
+    },
+    Thread: {
+      screen: ThreadScreen
+    }
+  },
+  {
+    initialRouteName: 'Channel'
+  }
+);
 
-//   let chatUser = {};
-
-//   const initClient = async () => {
-//     return (chatUser = await chatSignUpCallback(client.email, client.authid));
-//   };
-
-//   if (chatClient) {
-//     initClient();
-//   }
-
-//   console.log('chatUser:', chatUser);
-
-//   chatClient.disconnect();
-//   chatClient.setUser(
-//     {
-//       id: chatUser.username,
-//       name: chatUser.username,
-//       image: photo
-//     },
-//     chatUser.token
-//   );
-//   const channelTwo = chatClient.channel('messaging', '52380');
-//   channelTwo.watch();
-
-//   return (
-//     <SafeAreaView>
-//       <Chat client={chatClient} style={theme}>
-//         <Channel channel={channelTwo}>
-//           <View style={{ display: 'flex', height: '99%' }}>
-//             <MessageList />
-//             <MessageInput />
-//           </View>
-//           <Thread />
-//         </Channel>
-//       </Chat>
-//     </SafeAreaView>
-//   );
-// };
+const AppContainer = createAppContainer(RootStack);
 
 class ChatScreen extends React.Component {
   constructor(props) {
@@ -130,13 +131,74 @@ class ChatScreen extends React.Component {
       user: {}
     };
   }
-  render = () => <ChannelScreen user={this.props.user} />;
+  render() {
+    return <AppContainer screenProps={this.props.user} />;
+  }
 }
 
 function mapStateToProps(state) {
   const user = state;
-  return { user: user.userReducer[0] };
+  return {
+    user: user.userReducer[0]
+  };
 }
+
+const fetchToken = async user => {
+  console.log('user in fetch:', user);
+  let res = await fetch(`http:localhost:3000/chat/${user}`, {
+    method: 'POST'
+  });
+  let resJson = await res.json();
+  console.log('resJson:', resJson);
+  return resJson.token;
+};
+
+const basicScreen = () => {
+  return <BasicScreen />;
+};
+
+const chatWithUserScreen = props => {
+  console.log(props.screenProps.token);
+  chatClient.disconnect();
+  chatClient.setUser(
+    {
+      id: props.screenProps.googleUser.email.split('@')[0],
+      name: props.screenProps.googleUser.email.split('@')[0],
+      image: props.screenProps.googleUser.photo
+    },
+    props.screenProps.token
+  );
+  // chatClient.setUser(
+  //   {
+  //     id: 'artiefischer',
+  //     name: 'artiefischer',
+  //     image: faker.image.cats()
+  //   },
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYXJ0aWVmaXNjaGVyIn0.rV2qD9Q1QXE16BDGkqu1X2Sfd31FJR3miKUppPLxj8k'
+  // );
+  const channel = chatClient.channel('messaging', '55341');
+  channel.watch();
+  return (
+    <SafeAreaView>
+      <Chat client={chatClient} style={theme}>
+        <Channel client={chatClient} channel={channel}>
+          <View style={{ display: 'flex', height: '100%' }}>
+            <MessageList
+              onThreadSelect={thread => {
+                props.navigation.navigate('Thread', {
+                  thread,
+                  channel: channel,
+                  chatClient: chatClient
+                });
+              }}
+            />
+            <MessageInput />
+          </View>
+        </Channel>
+      </Chat>
+    </SafeAreaView>
+  );
+};
 
 export default connect(mapStateToProps)(ChatScreen);
 

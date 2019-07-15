@@ -5,7 +5,8 @@ import {
   StyleSheet,
   Image,
   Button,
-  ActivityIndicator
+  ActivityIndicator,
+  Dimensions
 } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { MontserratText } from '../components/StyledText';
@@ -35,7 +36,7 @@ class ProfileScreen extends React.Component {
   fetchSessions = async () => {
     let response = await fetch(
       `https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/sessions/${
-        this.props.user.authid
+        this.props.user.googleUser.authid
       }`
     );
     let sessions = await response.json();
@@ -73,7 +74,7 @@ class ProfileScreen extends React.Component {
       return null;
     } else {
       this.setState({
-        user: this.props.user,
+        user: this.props.user.googleUser,
         signedIn: true
       });
     }
@@ -124,20 +125,26 @@ class ProfileScreen extends React.Component {
                   height: 80,
                   borderRadius: 5
                 }}
-                source={{ uri: this.props.user.photo }}
+                source={{ uri: this.props.user.googleUser.photo }}
               />
             </View>
             <View style={styles.button}>
               <Button
                 onPress={() => this.fetchSessions()}
-                title={`See ${this.props.user.username}'s Sessions`}
+                title={`See ${this.props.user.googleUser.username}'s Sessions`}
                 color='white'
                 accessibilityLabel='Log the session to your profile'
               />
             </View>
-            <MontserratText style={{ fontSize: 30 }}>
-              Sessions Total: {this.state.total} min
-            </MontserratText>
+            {this.state.total < 59 ? (
+              <MontserratText style={{ fontSize: 30 }}>
+                Sessions Total: {this.state.total} min
+              </MontserratText>
+            ) : (
+              <MontserratText style={{ fontSize: 30 }}>
+                Sessions Total: {formatHour(this.state.total)}
+              </MontserratText>
+            )}
           </View>
         )}
         {this.state.sessions.map(session => {
@@ -161,7 +168,7 @@ class ProfileScreen extends React.Component {
                   }}
                   leftAvatar={{
                     rounded: true,
-                    source: { uri: this.props.user.photo }
+                    source: { uri: faker.image.nature() }
                   }}
                   title={`${FormatDate(session.created_at)} Duration: ${
                     session.duration
@@ -201,6 +208,11 @@ const FormatDate = createdAt => {
   return date;
 };
 
+const formatHour = total => {
+  let hour = (total / 60).toFixed(2);
+  return `${hour.split('.')[0]} hr ${hour.split('.')[1]} min`;
+};
+
 // -=-Stylesheet Definition-=-
 const styles = StyleSheet.create({
   container: {
@@ -218,7 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 24
   },
   sessionDiv: {
-    width: 400,
+    width: Dimensions.get('window').width / 1.05,
     paddingBottom: 3,
     borderRadius: 5
   },

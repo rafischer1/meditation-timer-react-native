@@ -7,7 +7,18 @@ export const getUser = id => {
       let response = await fetch(
         `https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/users/${id}`
       );
-      let user = await response.json();
+      let googleUser = await response.json();
+      let user = {};
+      if (response) {
+        let res = await fetch(
+          `http:localhost:3000/chat/${googleUser.email.split('@')[0]}`,
+          {
+            method: 'POST'
+          }
+        );
+        let resJ = await res.json();
+        user = { googleUser, token: resJ.token };
+      }
       dispatch({
         type: USER_SUCCESS,
         payload: user

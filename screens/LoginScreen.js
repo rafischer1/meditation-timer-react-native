@@ -63,7 +63,6 @@ class LoginScreen extends React.Component {
       photo: result.user.photoUrl,
       email: result.user.email
     };
-    console.log('logincall result body:', postBody);
     let response = await fetch(
       'https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/users',
       {

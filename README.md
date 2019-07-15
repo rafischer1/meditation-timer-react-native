@@ -51,6 +51,16 @@ Google Auth object:
 
 [x] Styling for all components (esp Profile signedIn)
 
+[x] Device width resized `Dimensions.get('window').width` for all devices
+
+[] Full logout procedure - send new user to Profile to trigger conditional
+
+[x] Minutes to hours in session total
+
+[x] Thread view for Chat [R/N Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
+
+[] Create actual chat for Med Timer w/ backend routing clone from Stream-Chat
+
 ![Basic Timer Dev Layout](./assets/images/wireframBasic.png 'Basic Timer Dev Layout')
 
 ![Basic Session Dev Layout](./assets/images/wireframeSessions.png 'Basic Sessions Dev Layout')
