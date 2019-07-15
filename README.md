@@ -69,4 +69,6 @@ Google Auth object:
 
 ![Basic Chat Dev Layout](./assets/images/chatScreen.png 'Basic Chat Dev Layout')
 
+[[Video Link]](https://youtu.be/KqllYl_z8pA)
+
 ---

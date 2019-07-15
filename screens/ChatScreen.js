@@ -1,11 +1,5 @@
 import React, { PureComponent } from 'react';
-import {
-  View,
-  SafeAreaView,
-  TouchableOpacity,
-  Text,
-  StyleSheet
-} from 'react-native';
+import { View, SafeAreaView, TouchableOpacity, Text } from 'react-native';
 import { StreamChat } from 'stream-chat';
 import BasicScreen from './BasicScreen';
 import {
@@ -13,9 +7,7 @@ import {
   Channel,
   MessageList,
   MessageInput,
-  ChannelList,
   Thread,
-  ChannelPreviewMessenger,
   CloseButton
 } from 'stream-chat-expo';
 import { connect } from 'react-redux';
@@ -55,7 +47,6 @@ class ChannelScreen extends PureComponent {
   };
 
   render() {
-    console.log('screenProps:', this.props.screenProps === undefined);
     {
       return this.props.screenProps === undefined
         ? basicScreen()
@@ -81,10 +72,6 @@ class ThreadScreen extends PureComponent {
   });
 
   render() {
-    // console.log('props in thread:', this.props);
-    // const { navigation, chatClient, channel } = this.props;
-    // const thread = navigation.getParam('thread');
-    // const channel = chatClient.channel('messaging', '55341');
     const { navigation } = this.props;
     const thread = navigation.getParam('thread');
     const channel = chatClient.channel('messaging', '55341');
@@ -143,22 +130,11 @@ function mapStateToProps(state) {
   };
 }
 
-const fetchToken = async user => {
-  console.log('user in fetch:', user);
-  let res = await fetch(`http:localhost:3000/chat/${user}`, {
-    method: 'POST'
-  });
-  let resJson = await res.json();
-  console.log('resJson:', resJson);
-  return resJson.token;
-};
-
 const basicScreen = () => {
   return <BasicScreen />;
 };
 
 const chatWithUserScreen = props => {
-  console.log(props.screenProps.token);
   chatClient.disconnect();
   chatClient.setUser(
     {
@@ -168,14 +144,6 @@ const chatWithUserScreen = props => {
     },
     props.screenProps.token
   );
-  // chatClient.setUser(
-  //   {
-  //     id: 'artiefischer',
-  //     name: 'artiefischer',
-  //     image: faker.image.cats()
-  //   },
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYXJ0aWVmaXNjaGVyIn0.rV2qD9Q1QXE16BDGkqu1X2Sfd31FJR3miKUppPLxj8k'
-  // );
   const channel = chatClient.channel('messaging', '55341');
   channel.watch();
   return (

@@ -10,16 +10,8 @@ export const getUser = id => {
       let googleUser = await response.json();
       let user = {};
       if (response) {
-        let res = await fetch(
-          `https://med-timer.herokuapp.com/chat/${
-            googleUser.email.split('@')[0]
-          }`,
-          {
-            method: 'POST'
-          }
-        );
-        let resJ = await res.json();
-        user = { googleUser, token: resJ.token };
+        let token = await fetchToken();
+        user = { googleUser, token };
       }
       dispatch({
         type: USER_SUCCESS,
@@ -32,4 +24,15 @@ export const getUser = id => {
       });
     }
   };
+};
+
+const fetchToken = async () => {
+  let response = await fetch(
+    `https://med-timer.herokuapp.com/chat/${googleUser.email.split('@')[0]}`,
+    {
+      method: 'POST'
+    }
+  );
+  let resJSON = await response.json();
+  return resJSON.token;
 };

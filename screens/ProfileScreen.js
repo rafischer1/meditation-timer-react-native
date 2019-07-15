@@ -9,6 +9,7 @@ import {
   Dimensions
 } from 'react-native';
 import { ListItem } from 'react-native-elements';
+import { FormatDate, FormatHour } from '../assets/conversionFuncs';
 import { MontserratText } from '../components/StyledText';
 import { connect } from 'react-redux';
 import TouchableScale from 'react-native-touchable-scale';
@@ -142,7 +143,7 @@ class ProfileScreen extends React.Component {
               </MontserratText>
             ) : (
               <MontserratText style={{ fontSize: 30 }}>
-                Sessions Total: {formatHour(this.state.total)}
+                Sessions Total: {FormatHour(this.state.total)}
               </MontserratText>
             )}
           </View>
@@ -194,24 +195,6 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(ProfileScreen);
-
-// FormatDate returns a US style date `day/month/year` from a timestamp
-const FormatDate = createdAt => {
-  //2019-06-15T19:20:40.421Z
-  let date = '';
-  date = `${createdAt.split('T')[0].split('-')[1]}/${
-    createdAt
-      .split(':')[0]
-      .split('-')[2]
-      .split('T')[0]
-  }/${createdAt.split(':')[0].split('-')[0]}`;
-  return date;
-};
-
-const formatHour = total => {
-  let hour = (total / 60).toFixed(2);
-  return `${hour.split('.')[0]} hr ${hour.split('.')[1]} min`;
-};
 
 // -=-Stylesheet Definition-=-
 const styles = StyleSheet.create({

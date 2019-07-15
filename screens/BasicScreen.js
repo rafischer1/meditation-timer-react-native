@@ -8,6 +8,9 @@ import {
 } from 'react-native';
 import { MontserratText } from '../components/StyledText';
 
+const photo =
+  'https://images.unsplash.com/photo-1505129137389-dc838a46f3f9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=933&q=80';
+
 const BasicScreen = () => {
   return (
     <ScrollView style={styles.container}>
@@ -20,8 +23,7 @@ const BasicScreen = () => {
             marginTop: 30
           }}
           source={{
-            uri:
-              'https://images.unsplash.com/photo-1505129137389-dc838a46f3f9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=933&q=80'
+            uri: photo
           }}
           PlaceholderContent={<ActivityIndicator />}
         />
