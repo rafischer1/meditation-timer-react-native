@@ -39,6 +39,7 @@ class LoginScreen extends React.Component {
         scopes: ['profile', 'email']
       });
       if (result.type === 'success') {
+        console.log('sign in success:', result.user);
         this.loginCallback(result);
         return this.setState({
           user: result.user,
