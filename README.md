@@ -59,7 +59,7 @@ Google Auth object:
 
 [x] Thread view for Chat [R/N Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
 
-[] Create actual chat for Med Timer w/ backend routing clone from Stream-Chat
+[x] Create actual chat for Med Timer w/ backend routing clone from Stream-Chat
 
 ![Basic Timer Dev Layout](./assets/images/wireframBasic.png 'Basic Timer Dev Layout')
 

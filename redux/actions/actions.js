@@ -11,7 +11,9 @@ export const getUser = id => {
       let user = {};
       if (response) {
         let res = await fetch(
-          `http:localhost:3000/chat/${googleUser.email.split('@')[0]}`,
+          `https://med-timer.herokuapp.com/chat/${
+            googleUser.email.split('@')[0]
+          }`,
           {
             method: 'POST'
           }
