@@ -13,6 +13,7 @@ import store from '../redux/store';
 import { getUser, USER_SUCCESS } from '../redux/actions/actions';
 import { connect } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
+import SessionForm from '../components/SessionForm';
 
 class LoginScreen extends React.Component {
   constructor(props) {
@@ -29,7 +30,6 @@ class LoginScreen extends React.Component {
   }
 
   signIn = async () => {
-    console.log('hit the sign in button');
     try {
       const result = await Google.logInAsync({
         iosClientId:
@@ -39,7 +39,7 @@ class LoginScreen extends React.Component {
         scopes: ['profile', 'email']
       });
       if (result.type === 'success') {
-        console.log('sign in success:', result.user);
+        // console.log('sign in success:', result.user);
         this.loginCallback(result);
         return this.setState({
           user: result.user,
@@ -91,7 +91,11 @@ class LoginScreen extends React.Component {
       <View style={styles.container}>
         {this.state.signedIn ? (
           <ScrollView style={{ paddingTop: 100 }}>
-            <LoggedInPage name={this.state.name} photoUrl={this.state.photo} />
+            <LoggedInPage
+              name={this.state.name}
+              photoUrl={this.state.photo}
+              id={this.state.userId}
+            />
             <TouchableHighlight style={styles.button}>
               <Button
                 onPress={() => this.logout()}
@@ -140,29 +144,47 @@ const LoggedInPage = props => {
     console.log(props.logout);
     return props.logout();
   };
+
+  const submitSessionCallback = async (duration, notes) => {
+    let postBody = {
+      duration: +duration,
+      notes
+    };
+    let response = await fetch(
+      `https://b6wl1cs9ia.execute-api.us-east-1.amazonaws.com/staging/sessions/${
+        props.id
+      }`,
+      {
+        method: 'POST',
+        body: JSON.stringify(postBody),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    if (response.status === 200) {
+      alert(
+        'Session logged! Go to Profile to see your session or to Timer to start a new session'
+      );
+    } else {
+      alert('Session was not able to be logged:', response.status);
+    }
+  };
   return (
-    <View style={styles.container}>
-      <MontserratText style={styles.header}>
-        Welcome: {props.name}
-      </MontserratText>
+    <ScrollView style={styles.container}>
       <View style={styles.shadow}>
         <Image style={styles.image} source={{ uri: props.photoUrl }} />
       </View>
       <View style={styles.info}>
         <MontserratText style={styles.font}>
-          Profile: see your stats!
-        </MontserratText>
-        <MontserratText style={styles.font}>
-          Timer: start a session!
-        </MontserratText>
-        <MontserratText style={styles.font}>
-          Chat: engage with other practicioners!
-        </MontserratText>
-        <MontserratText style={styles.font}>
-          Home: learn about Meditation Timer!
+          Welcome: {props.name}
         </MontserratText>
       </View>
-    </View>
+      <SessionForm
+        id={props.id}
+        submitSessionCallback={submitSessionCallback}
+      />
+    </ScrollView>
   );
 };
 
@@ -192,7 +214,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 30,
-    padding: 10
+    padding: 2
   },
   shadow: {
     alignItems: 'center',
@@ -208,18 +230,17 @@ const styles = StyleSheet.create({
     borderRadius: 5
   },
   info: {
+    display: 'flex',
     textAlign: 'center',
     fontSize: 26,
     borderWidth: 3,
     color: 'white',
-    fontFamily: 'menlo',
-    padding: 10,
+    padding: 5,
     borderColor: 'white',
     borderRadius: 5
   },
   button: {
     width: 250,
-    marginLeft: 50,
     borderWidth: 1,
     borderColor: 'white',
     backgroundColor: 'black',
@@ -229,6 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   font: {
+    alignContent: 'center',
     fontSize: 20
   }
 });

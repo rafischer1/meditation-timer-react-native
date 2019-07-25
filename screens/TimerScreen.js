@@ -42,9 +42,7 @@ class TimerScreen extends React.Component {
     });
   }
 
-  _stopButton() {
-    return this.setState({ running: false });
-  }
+  _stopButton = () => this.setState({ running: false });
 
   _finishedCall(msg) {
     this._playSound();
@@ -97,7 +95,7 @@ class TimerScreen extends React.Component {
         <CountDown
           size={30}
           until={this.state.timerValue * 60}
-          onFinish={() => this._finishedCall('🔔')}
+          onFinish={() => this._finishedCall()}
           digitStyle={{
             backgroundColor: '#FFF',
             borderWidth: 2,

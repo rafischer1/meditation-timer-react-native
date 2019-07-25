@@ -3,7 +3,6 @@ import { USER_FAILED, USER_SUCCESS } from '../actions/actions';
 const initialState = [];
 
 const userReducer = (state = initialState, { type, payload }) => {
-  console.log('user in reducer:', payload);
   switch (type) {
     case USER_SUCCESS:
       return [...initialState, payload];

@@ -11,8 +11,13 @@ const FormatDate = createdAt => {
 };
 
 const FormatHour = total => {
-  let hour = (total / 60).toFixed(2);
-  return `${hour.split('.')[0]} hr ${hour.split('.')[1]} min`;
+  if (total < 60) {
+    return `${total} min`;
+  } else if (total % 60 === 0) {
+    return `${total / 60} hr`;
+  } else {
+    return `${Math.floor(total / 60)} hr ${total % 60} min`;
+  }
 };
 
 module.exports = { FormatDate, FormatHour };

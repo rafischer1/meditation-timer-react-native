@@ -14,6 +14,7 @@ import { MontserratText } from '../components/StyledText';
 import { connect } from 'react-redux';
 import TouchableScale from 'react-native-touchable-scale';
 import Swipeout from 'react-native-swipeout';
+
 const faker = require('faker');
 
 class ProfileScreen extends React.Component {
@@ -30,7 +31,9 @@ class ProfileScreen extends React.Component {
       givenName: '',
       sessions: [],
       total: 0,
-      toDelete: 0
+      toDelete: 0,
+      duration: 0,
+      notes: ''
     };
   }
 
@@ -93,6 +96,14 @@ class ProfileScreen extends React.Component {
     }
   ];
 
+  logNotes = () => {
+    console.log('notes');
+  };
+
+  logDuration = () => {
+    console.log('duration');
+  };
+
   render() {
     return (
       <ScrollView style={styles.container}>
@@ -118,7 +129,7 @@ class ProfileScreen extends React.Component {
             </MontserratText>
           </ScrollView>
         ) : (
-          <View>
+          <View style={{ display: 'flex', alignItems: 'center' }}>
             <View style={styles.shadow}>
               <Image
                 style={{
@@ -137,14 +148,32 @@ class ProfileScreen extends React.Component {
                 accessibilityLabel='Log the session to your profile'
               />
             </View>
-            {this.state.total < 59 ? (
-              <MontserratText style={{ fontSize: 30 }}>
-                Sessions Total: {this.state.total} min
+            {this.state.sessions.length === 1 ? (
+              <MontserratText
+                style={{
+                  fontSize: 30,
+                  marginBotton: '1%',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                {this.state.sessions.length} Session:{' '}
+                {FormatHour(this.state.total)}
               </MontserratText>
             ) : (
-              <MontserratText style={{ fontSize: 30 }}>
-                Sessions Total: {FormatHour(this.state.total)}
-              </MontserratText>
+              <View style={{ display: 'flex', alignItems: 'center' }}>
+                {this.state.total < 59 ? (
+                  <MontserratText style={{ fontSize: 30 }}>
+                    {this.state.sessions.length} Sessions:{' '}
+                    {FormatHour(this.state.total)}
+                  </MontserratText>
+                ) : (
+                  <MontserratText style={{ fontSize: 30 }}>
+                    {this.state.sessions.length} Sessions:{' '}
+                    {FormatHour(this.state.total)}
+                  </MontserratText>
+                )}
+              </View>
             )}
           </View>
         )}
@@ -171,9 +200,9 @@ class ProfileScreen extends React.Component {
                     rounded: true,
                     source: { uri: faker.image.nature() }
                   }}
-                  title={`${FormatDate(session.created_at)} Duration: ${
-                    session.duration
-                  } min`}
+                  title={`${FormatDate(
+                    session.created_at
+                  )} Duration: ${FormatHour(session.duration)}`}
                   titleStyle={{ color: 'white', fontWeight: 'bold' }}
                   subtitleStyle={{ color: 'white' }}
                   subtitle={`${session.notes}`}
